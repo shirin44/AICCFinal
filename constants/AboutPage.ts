@@ -190,7 +190,7 @@ export const ABOUT_PAGE_CONTENT = {
     },
     {
       name: "Thao Trinh",
-      avatarSrc: "us/thao.JPG",
+      avatarSrc: "us/thao.jpg",
       linkedinUrl:
         "https://www.linkedin.com/in/thao-trinh-73ab23172/?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app",
       title: {
@@ -313,7 +313,7 @@ export const ABOUT_PAGE_CONTENT = {
     },
     {
       name: "Simona Bossoni",
-      avatarSrc: "Simona.png",
+      avatarSrc: "simona.png",
       role: {
         [Language.EN]:
           "Head of Child Development Department (HCMC hospital); Lecturer at National College of Education; Consultant for special schools and kindergartens",
