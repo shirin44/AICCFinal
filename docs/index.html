@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- ✅ relative path so it works at / and /NeuroPilot-AICC/ -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AICC</title>
+
+    <!-- ✅ Tailwind via CDN (OK for now) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- ✅ EmailJS for Contact page -->
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"
+    ></script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- ✅ Your theme variables + animations (unchanged) -->
+    <style>
+      :root {
+        --background: 220 16% 96%;
+        --foreground: 222 47% 11%;
+        --card: 0 0% 100%;
+        --card-foreground: 222 47% 11%;
+        --primary: 224 71% 40%;
+        --primary-foreground: 0 0% 100%;
+        --secondary: 220 16% 96%;
+        --secondary-foreground: 222 47% 11%;
+        --accent: 267 27% 48%;
+        --accent-foreground: 0 0% 100%;
+        --muted: 220 16% 96%;
+        --muted-foreground: 220 14% 25%;
+        --border: 215 20% 87%;
+        --ring: 224 71% 40%;
+        --success: 145 63% 42%;
+        --warning: 45 93% 47%;
+        --danger: 0 72% 51%;
+      }
+      .theme-blue {
+        --background: 210 40% 88%;
+        --foreground: 215 25% 20%;
+        --card: 0 0% 100%;
+        --card-foreground: 215 25% 20%;
+        --primary: 211 60% 55%;
+        --primary-foreground: 0 0% 100%;
+        --secondary: 210 35% 75%;
+        --secondary-foreground: 215 25% 20%;
+        --accent: 209 55% 50%;
+        --accent-foreground: 0 0% 100%;
+        --muted: 210 20% 82%;
+        --muted-foreground: 215 20% 30%;
+        --border: 210 20% 70%;
+        --ring: 211 60% 55%;
+        --success: 145 45% 45%;
+        --warning: 40 85% 55%;
+        --danger: 0 70% 50%;
+      }
+      .theme-red {
+        --background: 10 45% 90%;
+        --foreground: 10 25% 20%;
+        --card: 0 0% 100%;
+        --card-foreground: 10 25% 20%;
+        --primary: 10 65% 55%;
+        --primary-foreground: 0 0% 100%;
+        --secondary: 15 40% 75%;
+        --secondary-foreground: 10 25% 20%;
+        --accent: 5 60% 50%;
+        --accent-foreground: 0 0% 100%;
+        --muted: 12 30% 82%;
+        --muted-foreground: 10 20% 30%;
+        --border: 12 20% 70%;
+        --ring: 10 65% 55%;
+        --success: 145 45% 45%;
+        --warning: 40 85% 55%;
+        --danger: 0 70% 50%;
+      }
+      .theme-purple {
+        --background: 270 40% 92%;
+        --foreground: 270 30% 20%;
+        --card: 0 0% 100%;
+        --card-foreground: 270 30% 20%;
+        --primary: 267 45% 60%;
+        --primary-foreground: 0 0% 100%;
+        --secondary: 268 30% 80%;
+        --secondary-foreground: 270 30% 20%;
+        --accent: 269 40% 55%;
+        --accent-foreground: 0 0% 100%;
+        --muted: 270 25% 85%;
+        --muted-foreground: 270 20% 30%;
+        --border: 270 20% 75%;
+        --ring: 267 45% 60%;
+        --success: 145 45% 45%;
+        --warning: 40 85% 55%;
+        --danger: 0 70% 50%;
+      }
+      .theme-green {
+        --background: 135 35% 92%;
+        --foreground: 135 25% 20%;
+        --card: 0 0% 100%;
+        --card-foreground: 135 25% 20%;
+        --primary: 135 40% 50%;
+        --primary-foreground: 0 0% 100%;
+        --secondary: 135 30% 80%;
+        --secondary-foreground: 135 25% 20%;
+        --accent: 135 35% 55%;
+        --accent-foreground: 0 0% 100%;
+        --muted: 135 20% 85%;
+        --muted-foreground: 135 20% 30%;
+        --border: 135 20% 75%;
+        --ring: 135 40% 50%;
+        --success: 145 45% 45%;
+        --warning: 40 85% 55%;
+        --danger: 0 70% 50%;
+      }
+      .force-light-theme {
+        --background: 220 16% 96%;
+        --foreground: 222 47% 11%;
+        --card: 0 0% 100%;
+        --card-foreground: 222 47% 11%;
+        --primary: 224 71% 40%;
+        --primary-foreground: 0 0% 100%;
+        --secondary: 220 16% 96%;
+        --secondary-foreground: 222 47% 11%;
+        --accent: 267 27% 48%;
+        --accent-foreground: 0 0% 100%;
+        --muted: 220 16% 96%;
+        --muted-foreground: 220 14% 25%;
+        --border: 215 20% 87%;
+        --ring: 224 71% 40%;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
+      @keyframes float { 0%,100% {transform: translateY(0);} 50% {transform: translateY(-8px);} }
+      .animate-float { animation: float 6s infinite ease-in-out; }
+      @keyframes fadeInUp { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
+      .animate-fadeInUp { animation: fadeInUp 0.4s ease-out forwards; }
+      @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+      .animate-fadeIn { animation: fadeIn 0.5s ease-in-out forwards; }
+      @keyframes pulse-calm {
+        0% {transform:scale(1); box-shadow:0 0 0 0 hsl(var(--primary) / 0.4);}
+        70% {transform:scale(1.05); box-shadow:0 0 0 10px hsl(var(--primary) / 0);}
+        100% {transform:scale(1); box-shadow:0 0 0 0 hsl(var(--primary) / 0);}
+      }
+      .animate-pulse-calm { animation: pulse-calm 3s infinite; }
+      @keyframes progress-node-pulse { 0%,100% {transform:scale(1); opacity:1;} 50% {transform:scale(1.2); opacity:0.8;} }
+      .animate-progress-node-pulse { animation: progress-node-pulse 2s infinite ease-in-out; }
+      @keyframes bounce-slow {
+        0%,100% {transform: translateY(0); animation-timing-function:cubic-bezier(0.8,0,1,1);}
+        50% {transform: translateY(-15px); animation-timing-function:cubic-bezier(0,0,0.2,1);}
+      }
+      .animate-bounce-slow { animation: bounce-slow 2s infinite; }
+    </style>
+
+    <!-- ✅ Configure Tailwind theme tokens to match your CSS vars -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Be Vietnam Pro", "sans-serif"],
+              display: ["Be Vietnam Pro", "sans-serif"],
+            },
+            colors: {
+              border: "hsl(var(--border))",
+              ring: "hsl(var(--ring))",
+              background: "hsl(var(--background))",
+              foreground: "hsl(var(--foreground))",
+              primary: { DEFAULT: "hsl(var(--primary))", foreground: "hsl(var(--primary-foreground))" },
+              secondary: { DEFAULT: "hsl(var(--secondary))", foreground: "hsl(var(--secondary-foreground))" },
+              accent: { DEFAULT: "hsl(var(--accent))", foreground: "hsl(var(--accent-foreground))" },
+              muted: { DEFAULT: "hsl(var(--muted))", foreground: "hsl(var(--muted-foreground))" },
+              card: { DEFAULT: "hsl(var(--card))", foreground: "hsl(var(--card-foreground))" },
+              success: "hsl(var(--success))",
+              warning: "hsl(var(--warning))",
+              danger: "hsl(var(--danger))",
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- ❌ Removed importmap/CDN React. Vite bundles React from node_modules. -->
+    <script type="module" crossorigin src="/AICCFinal/assets/index-D4Hz3L9b.js"></script>
+    <link rel="stylesheet" crossorigin href="/AICCFinal/assets/index-DinrTpS0.css">
+  </head>
+
+  <body class="bg-background font-sans text-foreground">
+    <div id="root"></div>
+    <!-- ✅ Root-level entry; Vite rewrites for prod automatically -->
+  </body>
+</html>

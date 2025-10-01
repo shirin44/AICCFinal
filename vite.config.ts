@@ -9,10 +9,9 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
 
-    // IMPORTANT: match the GitHub repo name
-    base: "/NeuroPilot-AICC/",
+    // 👇 important — must match your GitHub repo name exactly
+    base: "/AICCFinal/",
 
-    // Safe way to expose public keys only — don’t push secrets
     define: {
       "process.env.API_KEY": JSON.stringify(env.VITE_API_KEY || ""),
     },
@@ -24,8 +23,10 @@ export default defineConfig(({ mode }) => {
     },
 
     build: {
-      // GitHub Pages: normally “dist”, but you can change to “docs” if you want to commit the build
-      outDir: "dist",
+      // output folder (for GitHub Pages you can choose "docs" or "dist")
+      // if you use "docs", set GitHub Pages → Branch: main, Folder: /docs
+      // if you keep "dist", use GitHub Actions to deploy automatically
+      outDir: "docs", // <-- easiest for Pages, just switch from dist to docs
       assetsDir: "assets",
       sourcemap: true,
     },
