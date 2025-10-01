@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
 
     // 👇 important — must match your GitHub repo name exactly
-    base: "/AICCFinal/",
+    base: "/",
 
     define: {
       "process.env.API_KEY": JSON.stringify(env.VITE_API_KEY || ""),
