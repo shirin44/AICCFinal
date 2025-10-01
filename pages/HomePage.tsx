@@ -6,7 +6,7 @@ import { NARRATORS } from "@/constants";
 import { HOME_PAGE_CONTENT } from "@/constants/homePage";
 import { NarratorRole, Language } from "../types";
 import { AppContext } from "../App";
-// import logoUrl from "public/logo.png";
+import logoUrl from "src/assets/images/logo.png";
 
 const normalizeLang = (l: unknown): Language =>
   l === Language.VN || l === "vi" || l === "VN" ? Language.VN : Language.EN;
@@ -27,7 +27,7 @@ const HeroSection: React.FC = () => {
         <h1 className="font-display text-4xl md:text-6xl font-extrabold text-foreground flex items-center justify-center gap-3 md:gap-4">
           <span>{H.hero.title[lang]}</span>
           <img
-            src='logo.png'
+            src={logoUrl}
             alt="AICC logo"
             className="h-24 w-auto align-middle"
           />
