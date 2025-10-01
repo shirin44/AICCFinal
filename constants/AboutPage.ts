@@ -151,7 +151,7 @@ export const ABOUT_PAGE_CONTENT = {
   team: [
     {
       name: "Shirin Shujaa",
-      avatarSrc: "us/shirin.JPG",
+      avatarSrc: "us/Shirin.JPG",
       portfolioUrl: "https://shirin44.github.io/shirin-portfolio/",
       linkedinUrl: "https://www.linkedin.com/in/shirin-shujaa/",
       resumeUrl:
@@ -190,7 +190,7 @@ export const ABOUT_PAGE_CONTENT = {
     },
     {
       name: "Thao Trinh",
-      avatarSrc: "us/Thao.JPG",
+      avatarSrc: "us/thao.JPG",
       linkedinUrl:
         "https://www.linkedin.com/in/thao-trinh-73ab23172/?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app",
       title: {
