@@ -16,9 +16,9 @@ export const NARRATORS: Record<NarratorRole, Narrator> = {
     },
     hover: { [Language.EN]: "Let's practice interviews!", [Language.VN]: "Hãy luyện tập phỏng vấn!" },
     avatars: {
-      neutral: 'src/assets/characters/candidates/candidates_neutral.png',
-      happy: 'src/assets/characters/candidates/candidates_happy.png',
-      sad: 'src/assets/characters/candidates/candidates_sad.png',
+      neutral: 'characters/candidates/candidates_neutral.png',
+      happy: 'characters/candidates/candidates_happy.png',
+      sad: 'characters/candidates/candidates_sad.png',
     },
     theme: 'blue'
   },
@@ -31,9 +31,9 @@ export const NARRATORS: Record<NarratorRole, Narrator> = {
     },
     hover: { [Language.EN]: "Learn inclusive hiring.", [Language.VN]: "Học cách tuyển dụng hòa nhập." },
     avatars: {
-      neutral: 'src/assets/characters/employers/employers_neutral.png',
-      happy: 'src/assets/characters/employers/employers_happy.png',
-      sad: 'src/assets/characters/employers/employers_sad.png',
+      neutral: 'characters/employers/employers_neutral.png',
+      happy: 'characters/employers/employers_happy.png',
+      sad: 'characters/employers/employers_sad.png',
     },
     theme: 'purple'
   },
@@ -46,9 +46,9 @@ export const NARRATORS: Record<NarratorRole, Narrator> = {
     },
     hover: { [Language.EN]: "Support your child's growth.", [Language.VN]: "Hỗ trợ sự phát triển của con bạn." },
     avatars: {
-      neutral: 'src/assets/characters/parents/parents_neutral.png',
-      happy: 'src/assets/characters/parents/parents_happy.png',
-      sad: 'src/assets/characters/parents/parents_sad.png',
+      neutral: 'characters/parents/parents_neutral.png',
+      happy: 'characters/parents/parents_happy.png',
+      sad: 'characters/parents/parents_sad.png',
     },
     theme: 'red'
   },
@@ -61,9 +61,9 @@ export const NARRATORS: Record<NarratorRole, Narrator> = {
     },
     hover: { [Language.EN]: "Be an empathetic peer.", [Language.VN]: "Trở thành một người bạn đồng cảm." },
     avatars: {
-      neutral: 'src/assets/characters/volunteers/volunteers_neutral.png',
-      happy: 'src/assets/characters/volunteers/volunteers_happy.png',
-      sad: 'src/assets/characters/volunteers/volunteers_sad.png',
+      neutral: 'characters/volunteers/volunteers_neutral.png',
+      happy: 'characters/volunteers/volunteers_happy.png',
+      sad: 'characters/volunteers/volunteers_sad.png',
     },
     theme: 'green'
   },
