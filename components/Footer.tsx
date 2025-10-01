@@ -1,6 +1,6 @@
 
 import React from 'react';
-import logoUrl from "@/src/assets/images/logo.png"; 
+import logoUrl from "logo.png"; 
 
 const Footer: React.FC = () => {
   return (
