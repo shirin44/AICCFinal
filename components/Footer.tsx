@@ -1,6 +1,6 @@
 
 import React from 'react';
-import logoUrl from "logo.png"; 
+//import logoUrl from "logo.png"; 
 
 const Footer: React.FC = () => {
   return (
@@ -9,12 +9,13 @@ const Footer: React.FC = () => {
         <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="flex items-center space-x-2">
             <img
-              src={logoUrl}               
+              src={`${import.meta.env.BASE_URL}images/logo.png`}           
               alt="AICC Logo"
               className="h-12 md:h-12 w-auto align-middle"
               loading="eager"
               fetchPriority="high"
             />
+            
           
                 
             </div>
