@@ -9,7 +9,7 @@ const Footer: React.FC = () => {
         <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="flex items-center space-x-2">
             <img
-              src={`${import.meta.env.BASE_URL}images/logo.png`}           
+              src={`${import.meta.env.BASE_URL}logo.png`}           
               alt="AICC Logo"
               className="h-12 md:h-12 w-auto align-middle"
               loading="eager"

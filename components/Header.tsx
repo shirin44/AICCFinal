@@ -62,7 +62,7 @@ const Header: React.FC = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
             <img
-              src={`${import.meta.env.BASE_URL}images/logo.png`}              
+              src={`${import.meta.env.BASE_URL}logo.png`}              
               alt="AICC Logo"
               className="h-14 w-auto block object-contain"
               loading="eager"

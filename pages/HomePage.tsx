@@ -32,7 +32,7 @@ const HeroSection: React.FC = () => {
             className="h-24 w-auto align-middle"
           /> */}
           <img
-  src={`${import.meta.env.BASE_URL}images/logo.png`}
+  src={`${import.meta.env.BASE_URL}logo.png`}
   alt="AICC logo"
   className="h-24 w-auto align-middle"
 />
