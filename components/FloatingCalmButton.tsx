@@ -1,8 +1,7 @@
 import React, { useContext } from 'react';
 import { AppContext } from '../App';
 import Tooltip from './Tooltip';
-import calmIcon from './icons/calm.png'; // or .png if not animated
-
+import calmIcon from 'calm.png'; 
 const FloatingCalmButton: React.FC = () => {
   const { setIsBreathingGuideVisible } = useContext(AppContext);
 
