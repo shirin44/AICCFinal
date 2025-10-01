@@ -36,7 +36,7 @@ export const CHARACTER_INTROS: Record<NarratorRole, CharacterIntro> = {
       [Language.VN]:
         "Mục tiêu của câu chuyện này là đặt mình vào vị trí của một người tự kỷ — cảm nhận những lựa chọn khó của Lan và luyện các hành động nhỏ tôn trọng nhu cầu của cô ấy ở nơi làm việc và ở nhà.",
     },
-    avatar: "/src/assets/characters/candidates/candidates_happy.png",
+    avatar: "assets/characters/candidates/candidates_happy.png",
     alt: {
       [Language.EN]: "Portrait of Lan",
       [Language.VN]: "Chân dung Lan",
@@ -65,7 +65,7 @@ export const CHARACTER_INTROS: Record<NarratorRole, CharacterIntro> = {
       [Language.VN]:
         "Mục tiêu của câu chuyện này là đặt mình vào vị trí của một ứng viên tự kỷ — nhận ra thói quen phỏng vấn giúp hay cản, và thử các điều chỉnh hòa nhập để bộc lộ kỹ năng thật.",
     },
-    avatar: "/src/assets/characters/employers/employers_happy.png",
+    avatar: "assets/characters/employers/employers_happy.png",
     alt: {
       [Language.EN]: "Portrait of Ms. Vy, HR Manager",
       [Language.VN]: "Chân dung chị Vy, Trưởng phòng Nhân sự",
@@ -94,7 +94,7 @@ export const CHARACTER_INTROS: Record<NarratorRole, CharacterIntro> = {
       [Language.VN]:
         "Mục tiêu của câu chuyện này là đặt mình vào vị trí của người chăm sóc một người tự kỷ trưởng thành — học các thói quen và ngôn ngữ đơn giản giúp giảm lo âu và tăng tự chủ.",
     },
-    avatar: "/src/assets/characters/parents/parents_happy.png",
+    avatar: "assets/characters/parents/parents_happy.png",
     alt: {
       [Language.EN]: "Portrait of Minh, a devoted dad",
       [Language.VN]: "Chân dung Minh, người cha tận tâm",
@@ -120,7 +120,7 @@ export const CHARACTER_INTROS: Record<NarratorRole, CharacterIntro> = {
       [Language.VN]:
         "Mục tiêu của câu chuyện này là đặt mình vào vị trí của một tình nguyện viên đồng trang lứa — thử các cách chia nhỏ (hình ảnh, nhập vai, từng bước) và tự chăm sóc để duy trì tiến bộ.",
     },
-    avatar: "/src/assets/characters/volunteers/volunteers_happy.png",
+    avatar: "assets/characters/volunteers/volunteers_happy.png",
     alt: {
       [Language.EN]: "Portrait of An, peer volunteer",
       [Language.VN]: "Chân dung An, tình nguyện viên đồng trang lứa",

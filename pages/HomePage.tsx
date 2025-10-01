@@ -26,7 +26,11 @@ const HeroSection: React.FC = () => {
       <div className="w-full max-w-5xl px-4 animate-fadeInUp">
         <h1 className="font-display text-4xl md:text-6xl font-extrabold text-foreground flex items-center justify-center gap-3 md:gap-4">
           <span>{H.hero.title[lang]}</span>
-          <img src={logoUrl} alt="AICC logo" className="h-24 w-auto align-middle" />
+          <img
+            src={logoUrl}
+            alt="AICC logo"
+            className="h-24 w-auto align-middle"
+          />
         </h1>
 
         <p className="mt-3 text-base md:text-lg text-foreground/80 font-semibold">
@@ -50,13 +54,13 @@ const HeroSection: React.FC = () => {
               aria-label="Play video"
             >
               <iframe
-  src={`https://www.youtube.com/embed/${YT_ID}`}
-  title="YouTube video"
-  className="absolute inset-0 w-full h-full"
-  frameBorder="0"
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-  allowFullScreen
-></iframe>
+                src={`https://www.youtube.com/embed/${YT_ID}`}
+                title="YouTube video"
+                className="absolute inset-0 w-full h-full"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
 
               <span className="absolute inset-0 m-auto z-10 w-20 h-20 bg-background/80 rounded-full flex items-center justify-center shadow-xl">
                 ▶
@@ -84,7 +88,9 @@ const HeroSection: React.FC = () => {
         aria-label={HOME_PAGE_CONTENT.hero.ariaScroll[lang]}
         onClick={(e) => {
           e.preventDefault();
-          document.getElementById("narrators")?.scrollIntoView({ behavior: "smooth" });
+          document
+            .getElementById("narrators")
+            ?.scrollIntoView({ behavior: "smooth" });
         }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce-slow"
       >
@@ -95,7 +101,12 @@ const HeroSection: React.FC = () => {
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </div>
       </a>
@@ -138,19 +149,25 @@ const QuickFacts: React.FC = () => {
             <h3 className="font-display text-3xl font-bold text-brand-blue-900">
               {H.facts.f1.head[lang]}
             </h3>
-            <p className="mt-2 text-muted-foreground font-medium">{H.facts.f1.body[lang]}</p>
+            <p className="mt-2 text-muted-foreground font-medium">
+              {H.facts.f1.body[lang]}
+            </p>
           </div>
           <div>
             <h3 className="font-display text-3xl font-bold text-brand-red-900">
               {H.facts.f2.head[lang]}
             </h3>
-            <p className="mt-2 text-muted-foreground font-medium">{H.facts.f2.body[lang]}</p>
+            <p className="mt-2 text-muted-foreground font-medium">
+              {H.facts.f2.body[lang]}
+            </p>
           </div>
           <div>
             <h3 className="font-display text-3xl font-bold text-brand-purple-900">
               {H.facts.f3.head[lang]}
             </h3>
-            <p className="mt-2 text-muted-foreground font-medium">{H.facts.f3.body[lang]}</p>
+            <p className="mt-2 text-muted-foreground font-medium">
+              {H.facts.f3.body[lang]}
+            </p>
           </div>
         </div>
       </div>
