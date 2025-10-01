@@ -6,7 +6,7 @@ import { HEADER_CONTENT } from "@/constants/Header";
 import { Language, NarratorRole } from "../types";
 import Tooltip from "./Tooltip";
 
-import logoUrl from "logo.png"; 
+//import logoUrl from "logo.png"; 
 const LanguageToggle: React.FC = () => {
   const { language, setLanguage } = useContext(AppContext);
   const toggleLanguage = () => {
@@ -62,7 +62,7 @@ const Header: React.FC = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
             <img
-              src={logoUrl}               
+              src={`${import.meta.env.BASE_URL}images/logo.png`}              
               alt="AICC Logo"
               className="h-14 w-auto block object-contain"
               loading="eager"
