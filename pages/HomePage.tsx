@@ -6,7 +6,7 @@ import { NARRATORS } from "@/constants";
 import { HOME_PAGE_CONTENT } from "@/constants/homePage";
 import { NarratorRole, Language } from "../types";
 import { AppContext } from "../App";
-import logoUrl from "/Users/shirinshujaa/Desktop/NeuroPilot-AICC/src/assets/images/logo.png";
+import logoUrl from "logo.png";
 
 const normalizeLang = (l: unknown): Language =>
   l === Language.VN || l === "vi" || l === "VN" ? Language.VN : Language.EN;
