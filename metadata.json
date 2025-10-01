@@ -1,0 +1,7 @@
+{
+  "name": "NeuroPilot AICC",
+  "description": "An AI Career Companion designed to help autistic young adults practice job interviews, train employers on inclusion, and support CareGivers and volunteers. Part of the Accessibility Design Competition (ADC 2025).",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
