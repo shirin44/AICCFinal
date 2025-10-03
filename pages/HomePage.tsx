@@ -7,19 +7,17 @@ import { HOME_PAGE_CONTENT } from "@/constants/homePage";
 import { NarratorRole, Language } from "../types";
 import { AppContext } from "../App";
 
-/* ---------- helpers ---------- */
 const normalizeLang = (l: unknown): Language =>
   l === Language.VN || l === "vi" || l === "VN" ? Language.VN : Language.EN;
 
-/* ---------- Skip link (keyboard users) ---------- */
+/* ---------- Skip link ---------- */
 const SkipToContent: React.FC = () => (
   <a
     href="#main"
     className="
       sr-only focus:not-sr-only
-      fixed top-2 left-2 z-[100]
-      rounded-lg bg-primary text-primary-foreground
-      px-3 py-2 text-sm shadow-md
+      fixed top-2 left-2 z-50
+      rounded bg-primary text-primary-foreground px-3 py-2 text-sm shadow
     "
   >
     Skip to main content
@@ -32,56 +30,37 @@ const HeroSection: React.FC = () => {
   const lang = normalizeLang(language);
   const H = HOME_PAGE_CONTENT;
   const wl = H.hero.welcomeLeadParts[lang];
-
   const [showPlayer, setShowPlayer] = React.useState(false);
-  const YT_ID = "Q_lkVCYpJCg"; // extracted from your YouTube link
-  const thumbnail = `https://img.youtube.com/vi/${YT_ID}/hqdefault.jpg`;
+  const YT_ID = "Q_lkVCYpJCg";
 
-  // Smooth scroll, but respect reduced motion
   const scrollToNarrators = (e: React.MouseEvent) => {
     e.preventDefault();
-    const el = document.getElementById("narrators");
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    el?.scrollIntoView({ behavior: prefersReduced ? "auto" : "smooth", block: "start" });
+    document
+      .getElementById("narrators")
+      ?.scrollIntoView({ behavior: prefersReduced ? "auto" : "smooth" });
   };
 
   return (
     <section
-      aria-labelledby="hero-heading"
-      className="
-        min-h-[85vh] flex flex-col items-center justify-center text-center relative
-        bg-gradient-to-b from-background to-muted/50
-        px-4 sm:px-6
-      "
+      id="hero"
+      className="min-h-[85vh] flex flex-col items-center justify-center text-center relative bg-gradient-to-b from-background to-muted/50 px-4"
     >
       <div className="w-full max-w-5xl mx-auto motion-safe:animate-fadeInUp">
-        <h1
-          id="hero-heading"
-          className="
-            font-display text-3xl xs:text-4xl sm:text-5xl md:text-6xl
-            font-extrabold text-foreground
-            flex items-center justify-center gap-2 sm:gap-3 md:gap-4
-          "
-        >
-          <span className="leading-tight">{H.hero.title[lang]}</span>
+        <h1 className="font-display text-3xl sm:text-5xl md:text-6xl font-extrabold text-foreground flex items-center justify-center gap-2 sm:gap-3 md:gap-4">
+          <span>{H.hero.title[lang]}</span>
           <img
             src={`${import.meta.env.BASE_URL}logo.png`}
             alt="AICC logo"
             width={96}
             height={96}
-            loading="lazy"
-            className="h-14 w-auto sm:h-16 md:h-24 align-middle"
+            className="h-16 sm:h-20 md:h-24 w-auto align-middle"
           />
         </h1>
 
-        <p className="mt-3 text-base sm:text-lg text-foreground/80 font-semibold">
+        <p className="mt-3 text-base sm:text-lg md:text-xl text-foreground/80 font-semibold">
           {wl.before}
-          <span
-            className="
-              inline-block text-3xl sm:text-4xl font-extrabold text-primary
-              motion-safe:animate-slam motion-reduce:animate-none
-            "
-          >
+          <span className="inline-block text-3xl sm:text-4xl font-extrabold text-primary motion-safe:animate-slam motion-reduce:animate-none">
             {wl.word}
           </span>
           {wl.after}
@@ -91,60 +70,25 @@ const HeroSection: React.FC = () => {
           {H.hero.tagline[lang]}
         </p>
 
-        {/* Video area */}
-        <div
-          className="
-            mt-8 sm:mt-10 md:mt-12 w-full max-w-4xl mx-auto
-            aspect-video rounded-2xl shadow-2xl border border-border
-            relative overflow-hidden bg-black
-          "
-        >
+        {/* Video */}
+        <div className="mt-8 sm:mt-12 w-full max-w-4xl mx-auto aspect-video rounded-2xl shadow-2xl border border-border relative overflow-hidden bg-black">
           {!showPlayer ? (
             <>
-              {/* Thumbnail image */}
               <img
-                src={thumbnail}
-                alt={H.hero.videoLabel[lang]}
-                width={1280}
-                height={720}
-                loading="lazy"
+                src={`https://img.youtube.com/vi/${YT_ID}/hqdefault.jpg`}
+                alt="Video thumbnail"
                 className="absolute inset-0 w-full h-full object-cover"
               />
-              {/* Play button */}
               <button
-                type="button"
                 onClick={() => setShowPlayer(true)}
-                className="
-                  group absolute inset-0 grid place-items-center
-                  focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/40
-                "
-                aria-label={HOME_PAGE_CONTENT.hero.ariaPlay[lang]}
+                className="absolute inset-0 grid place-items-center focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/40"
+                aria-label="Play video"
               >
-                <span
-                  className="
-                    grid place-items-center w-16 h-16 sm:w-20 sm:h-20 rounded-full
-                    bg-background/80 backdrop-blur-md shadow-xl
-                    ring-1 ring-border transition transform
-                    group-hover:scale-105
-                  "
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                    className="w-8 h-8 sm:w-10 sm:h-10"
-                    fill="currentColor"
-                  >
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
+                <span className="grid place-items-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-background/80 backdrop-blur-md shadow-xl ring-1 ring-border transition group-hover:scale-105">
+                  ▶
                 </span>
               </button>
-              <p
-                className="
-                  absolute bottom-3 right-3 z-10 text-white/95
-                  text-xs sm:text-sm font-semibold drop-shadow px-2 py-1 rounded
-                  bg-black/30
-                "
-              >
+              <p className="absolute bottom-3 right-3 z-10 text-white/95 text-xs sm:text-sm font-semibold drop-shadow px-2 py-1 rounded bg-black/30">
                 {H.hero.videoLabel[lang]}
               </p>
             </>
@@ -166,20 +110,10 @@ const HeroSection: React.FC = () => {
         href="#narrators"
         aria-label={HOME_PAGE_CONTENT.hero.ariaScroll[lang]}
         onClick={scrollToNarrators}
-        className="
-          absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2
-          motion-safe:animate-bounce-slow motion-reduce:animate-none
-          focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/40 rounded-full
-        "
+        className="absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 motion-safe:animate-bounce-slow motion-reduce:animate-none focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/40 rounded-full"
       >
         <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-primary/20 flex items-center justify-center ring-4 ring-primary/10 hover:bg-primary/30 transition-colors">
-          <svg
-            className="w-7 h-7 sm:w-8 sm:h-8 text-primary"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
+          <svg className="w-7 h-7 sm:w-8 sm:h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
           </svg>
         </div>
@@ -195,8 +129,8 @@ const NarratorSelection: React.FC = () => {
   const H = HOME_PAGE_CONTENT;
 
   return (
-    <section id="narrators" aria-labelledby="narrators-heading" className="py-12 sm:py-16 px-4 sm:px-6">
-      <h2 className="text-center font-display text-2xl sm:text-3xl font-bold mb-6 sm:mb-10" id="narrators-heading">
+    <section id="narrators" className="py-12 sm:py-16 px-4">
+      <h2 className="text-center font-display text-2xl sm:text-3xl font-bold mb-6 sm:mb-10">
         {H.narrators.title[lang]}
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 max-w-4xl mx-auto">
@@ -216,42 +150,32 @@ const QuickFacts: React.FC = () => {
   const H = HOME_PAGE_CONTENT;
 
   return (
-    <section
-      aria-labelledby="facts-heading"
-      className="
-        py-12 sm:py-20 mx-4 sm:mx-6
-      "
-    >
-      <div className="bg-card rounded-2xl shadow-lg">
-        <div className="px-4 sm:px-6 py-8 sm:py-10">
-          <h2 id="facts-heading" className="sr-only">
-            {H.facts.title?.[lang] ?? "Quick Facts"}
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div>
-              <h3 className="font-display text-2xl sm:text-3xl font-bold text-brand-blue-900">
-                {H.facts.f1.head[lang]}
-              </h3>
-              <p className="mt-2 text-sm sm:text-base text-muted-foreground font-medium">
-                {H.facts.f1.body[lang]}
-              </p>
-            </div>
-            <div>
-              <h3 className="font-display text-2xl sm:text-3xl font-bold text-brand-red-900">
-                {H.facts.f2.head[lang]}
-              </h3>
-              <p className="mt-2 text-sm sm:text-base text-muted-foreground font-medium">
-                {H.facts.f2.body[lang]}
-              </p>
-            </div>
-            <div>
-              <h3 className="font-display text-2xl sm:text-3xl font-bold text-brand-purple-900">
-                {H.facts.f3.head[lang]}
-              </h3>
-              <p className="mt-2 text-sm sm:text-base text-muted-foreground font-medium">
-                {H.facts.f3.body[lang]}
-              </p>
-            </div>
+    <section className="py-12 sm:py-20 bg-card rounded-2xl shadow-lg mx-4">
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 text-center">
+          <div>
+            <h3 className="font-display text-2xl sm:text-3xl font-bold text-brand-blue-900">
+              {H.facts.f1.head[lang]}
+            </h3>
+            <p className="mt-2 text-sm sm:text-base text-muted-foreground font-medium">
+              {H.facts.f1.body[lang]}
+            </p>
+          </div>
+          <div>
+            <h3 className="font-display text-2xl sm:text-3xl font-bold text-brand-red-900">
+              {H.facts.f2.head[lang]}
+            </h3>
+            <p className="mt-2 text-sm sm:text-base text-muted-foreground font-medium">
+              {H.facts.f2.body[lang]}
+            </p>
+          </div>
+          <div>
+            <h3 className="font-display text-2xl sm:text-3xl font-bold text-brand-purple-900">
+              {H.facts.f3.head[lang]}
+            </h3>
+            <p className="mt-2 text-sm sm:text-base text-muted-foreground font-medium">
+              {H.facts.f3.body[lang]}
+            </p>
           </div>
         </div>
       </div>
@@ -266,29 +190,18 @@ const Sponsors: React.FC = () => {
   const H = HOME_PAGE_CONTENT;
 
   return (
-    <section aria-labelledby="sponsors-heading" className="py-12 sm:py-16 text-center px-4 sm:px-6">
-      <h2 id="sponsors-heading" className="font-display text-xl sm:text-2xl font-bold text-muted-foreground mb-6 sm:mb-8">
+    <section className="py-12 sm:py-16 text-center px-4">
+      <h2 className="font-display text-xl sm:text-2xl font-bold text-muted-foreground mb-6 sm:mb-8">
         {H.sponsors.title[lang]}
       </h2>
-      <ul
-        className="
-          flex justify-center items-center gap-6 sm:gap-10 md:gap-12 text-muted-foreground
-          flex-wrap
-        "
-        aria-label={H.sponsors.title[lang]}
-      >
-        <li className="font-bold text-base sm:text-lg">{H.sponsors.labels.adc[lang]}</li>
-        <li>
-          <img
-            src="https://1000logos.net/wp-content/uploads/2019/07/RMIT-Logo.png"
-            alt="RMIT University"
-            width={240}
-            height={60}
-            loading="lazy"
-            className="h-8 sm:h-10 md:h-12 w-auto"
-          />
-        </li>
-      </ul>
+      <div className="flex flex-wrap justify-center items-center gap-6 sm:gap-10 md:gap-12 text-muted-foreground">
+        <span className="font-bold text-base sm:text-lg">{H.sponsors.labels.adc[lang]}</span>
+        <img
+          src="https://1000logos.net/wp-content/uploads/2019/07/RMIT-Logo.png"
+          alt="RMIT University Logo"
+          className="h-8 sm:h-10 md:h-12 w-auto"
+        />
+      </div>
     </section>
   );
 };

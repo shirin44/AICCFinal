@@ -18,6 +18,7 @@ export const HEADER_CONTENT = {
       [Language.EN]: "Our Story",
       [Language.VN]: "Câu chuyện của chúng tôi",
     },
+    menu: { en: "Menu", vn: "Menu" } 
   },
   roles: {
     jobseeker: {

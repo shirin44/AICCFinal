@@ -10,6 +10,10 @@ export const HOME_PAGE_CONTENT = {
       [Language.EN]: "AICC",
       [Language.VN]: "AICC",
     },
+    ariaPlay: {
+      en: "Play intro video",
+      vn: "Phát video giới thiệu",
+    },
 
     // 🔹 Keep the original whole-line string (optional / fallback)
     welcomeLead: {
