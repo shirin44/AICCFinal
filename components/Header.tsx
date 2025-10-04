@@ -151,7 +151,8 @@ const Header: React.FC = () => {
               <LanguageToggle />
             </div>
 
-            {/* Mobile menu button */}
+            {/* Mobile menu button 
+            blabla*/}
             <button
               ref={buttonRef}
               type="button"
