@@ -1,20 +1,47 @@
+// src/components/jobseeker/interview/InterviewPractice.tsx
 import React, { useState, useContext, useEffect } from "react";
 
 import { AppContext } from "@/App";
 import { DIALOGUE } from "@/constants";
 import type { StarFeedback } from "@/types";
+import { Language } from "@/types";
+
 import VoiceInputButton from "@/components/VoiceInputButton";
 import Tooltip from "@/components/Tooltip";
-import { addHistoryEntry, type PracticeType as HistoryPracticeType } from "@/utils/History";
+import {
+  addHistoryEntry,
+  type PracticeType as HistoryPracticeType,
+} from "@/utils/History";
 import StarRating from "@/components/StarRating";
 import FeedbackDisplay from "@/components/FeedbackDisplay";
 import SavedQuestionsList from "@/components/SavedQuestionsList";
 import QuestionControls from "@/components/QuestionControls";
 import BookmarkIcon from "@/components/icons/BookmarkIcon";
 
-import { loadSavedQuestions, saveQuestion, removeSavedQuestion, isQuestionSaved, type SavedQuestion } from "@/utils/savedQuestions";
+import {
+  loadSavedQuestions,
+  saveQuestion,
+  removeSavedQuestion,
+  isQuestionSaved,
+  type SavedQuestion,
+} from "@/utils/savedQuestions";
 
-import { getInterviewFeedback, getImprovementSuggestion } from "@/services/geminiService";
+import {
+  getInterviewFeedback,
+  getImprovementSuggestion,
+} from "@/services/geminiService";
+
+import { INTERVIEW_PRACTICE_CONTENT } from "@/constants/jobseeker/interviewPracticeContent";
+
+// Heroicons (or similar icon library)
+import {
+  ChatBubbleLeftRightIcon,
+  SparklesIcon,
+  QuestionMarkCircleIcon,
+  ArrowLeftIcon,
+  HeartIcon,
+  MicrophoneIcon,
+} from "@heroicons/react/24/outline";
 
 type FlowStep = "setup" | "practice" | "summary";
 type PracticeType = "STAR Interview" | "Common Questions" | "Small Talk";
@@ -43,17 +70,21 @@ const questionSets: Record<PracticeType, string[]> = {
 };
 
 const InterviewPractice: React.FC = () => {
-  const { language, setNarratorDialogue, setNarratorState } = useContext(AppContext);
+  const { language, setNarratorDialogue, setNarratorState } =
+    useContext(AppContext);
 
   const [flowStep, setFlowStep] = useState<FlowStep>("setup");
-  const [practiceType, setPracticeType] = useState<PracticeType>("STAR Interview");
+  const [practiceType, setPracticeType] =
+    useState<PracticeType>("STAR Interview");
 
   const [questions, setQuestions] = useState<string[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   const [answer, setAnswer] = useState("");
   const [feedback, setFeedback] = useState<StarFeedback | null>(null);
-  const [suggestions, setSuggestions] = useState<Partial<Record<StarComponent, string>>>({});
+  const [suggestions, setSuggestions] = useState<
+    Partial<Record<StarComponent, string>>
+  >({});
   const [isFetchingSuggestions, setIsFetchingSuggestions] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -62,10 +93,22 @@ const InterviewPractice: React.FC = () => {
 
   const [saved, setSaved] = useState<SavedQuestion[]>([]);
 
+  // language helper
+  const langKey = language === "en" ? Language.EN : Language.VN;
+  const t = <K extends keyof typeof INTERVIEW_PRACTICE_CONTENT>(key: K) =>
+    INTERVIEW_PRACTICE_CONTENT[key][langKey];
+
+  const practiceLabel = (type: PracticeType) =>
+    INTERVIEW_PRACTICE_CONTENT.practiceTypeLabel[langKey][type];
+
+  const practiceDescription = (type: PracticeType) =>
+    INTERVIEW_PRACTICE_CONTENT.practiceTypeDescription[langKey][type];
+
   useEffect(() => {
     setSaved(loadSavedQuestions());
   }, []);
 
+  // Narrator dialogue / avatar state
   useEffect(() => {
     let dialogueKey = "";
     switch (flowStep) {
@@ -82,7 +125,11 @@ const InterviewPractice: React.FC = () => {
           feedback?.overall.score && feedback.overall.score >= 4
             ? "jobseekerSummary"
             : "jobseekerFeedback";
-        setNarratorState(feedback?.overall.score && feedback.overall.score >= 4 ? "celebrating" : "explaining");
+        setNarratorState(
+          feedback?.overall.score && feedback.overall.score >= 4
+            ? "celebrating"
+            : "explaining"
+        );
         break;
     }
     if (dialogueKey) setNarratorDialogue(DIALOGUE[dialogueKey][language]);
@@ -105,7 +152,10 @@ const InterviewPractice: React.FC = () => {
 
   const startFromSaved = (q: string) => {
     setPracticeType("STAR Interview");
-    setQuestions([q, ...questionSets["STAR Interview"].filter((x) => x !== q)]);
+    setQuestions([
+      q,
+      ...questionSets["STAR Interview"].filter((x) => x !== q),
+    ]);
     setCurrentQuestionIndex(0);
     setAnswer("");
     setFeedback(null);
@@ -116,8 +166,11 @@ const InterviewPractice: React.FC = () => {
 
   const currentQuestion = questions[currentQuestionIndex] || "";
   const isFirst = currentQuestionIndex === 0;
-  const isLast = currentQuestionIndex === Math.max(0, questions.length - 1);
-  const isBookmarked = currentQuestion ? isQuestionSaved(currentQuestion, saved) : false;
+  const isLast =
+    currentQuestionIndex === Math.max(0, questions.length - 1);
+  const isBookmarked = currentQuestion
+    ? isQuestionSaved(currentQuestion, saved)
+    : false;
 
   const toggleBookmark = () => {
     if (!currentQuestion) return;
@@ -131,33 +184,37 @@ const InterviewPractice: React.FC = () => {
 
   const handleSubmitAnswer = async () => {
     if (!answer.trim()) {
-      setError("Please provide an answer.");
+      setError(t("errorNoAnswer"));
       return;
     }
     setIsLoading(true);
     setError("");
     setSuggestions({});
-  
+
     try {
       const fb = await getInterviewFeedback(currentQuestion, answer);
       setFeedback(fb);
       setFlowStep("summary");
-  
-      // --- NEW: save compact session history entry ---
+
+      // Save compact session history entry
       addHistoryEntry({
-        type: practiceType,                  // "STAR Interview" | "Common Questions" | "Small Talk"
+        type: practiceType as HistoryPracticeType,
         question: currentQuestion,
         overallScore: fb.overall?.score ?? 0,
-        // keep payload small (optional)
-        answer: answer.length > 1000 ? `${answer.slice(0, 1000)}…` : answer,
+        answer:
+          answer.length > 1000 ? `${answer.slice(0, 1000)}…` : answer,
         feedback: fb.overall ? { overall: fb.overall } : undefined,
       });
-      // --- end new code ---
-  
-      const toImprove: StarComponent[] = (Object.keys(fb) as (keyof StarFeedback)[])
-        .filter((k) => k !== "overall" && (fb as any)[k]?.score < 4)
+
+      // Work out which STAR parts need suggestions
+      const toImprove: StarComponent[] = (
+        Object.keys(fb) as (keyof StarFeedback)[]
+      )
+        .filter(
+          (k) => k !== "overall" && (fb as any)[k]?.score < 4
+        )
         .map((k) => k as StarComponent);
-  
+
       if (toImprove.length > 0) {
         setIsFetchingSuggestions(true);
         const settled = await Promise.all(
@@ -169,16 +226,20 @@ const InterviewPractice: React.FC = () => {
             ).then((res) => ({ [comp]: res.suggestion }))
           )
         );
-        setSuggestions(settled.reduce((acc, cur) => ({ ...acc, ...cur }), {}));
+        setSuggestions(
+          settled.reduce(
+            (acc, cur) => ({ ...acc, ...cur }),
+            {} as Partial<Record<StarComponent, string>>
+          )
+        );
         setIsFetchingSuggestions(false);
       }
     } catch (err: any) {
-      setError(err.message || "An unknown error occurred.");
+      setError(t("unknownError"));
     } finally {
       setIsLoading(false);
     }
   };
-  
 
   const resetForQuestion = (nextIndex: number) => {
     setCurrentQuestionIndex(nextIndex);
@@ -196,8 +257,8 @@ const InterviewPractice: React.FC = () => {
 
   const nextQuestion = () => {
     if (isLast) {
-      alert("You've completed all questions in this set!");
-      resetPractice();
+      // No surprise alert: show a calm inline message instead
+      setError(t("endOfSetNotice"));
       return;
     }
     resetForQuestion(currentQuestionIndex + 1);
@@ -222,45 +283,77 @@ const InterviewPractice: React.FC = () => {
     setAnswer((prev) => (prev ? prev.trim() + " " : "") + text);
   };
 
-  /* -------------------------------- Render -------------------------------- */
+  /* -------------------------------- Render: SETUP -------------------------------- */
+
   if (flowStep === "setup") {
     return (
-      <div>
-        <h2 className="font-display text-3xl font-extrabold mb-4 text-black tracking-tight">
-          Choose Your Practice Type
-        </h2>
+      <div className="space-y-6">
+        {/* Step label */}
+        <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
+          <SparklesIcon className="h-4 w-4" />
+          <span>{t("stepLabelSetup")}</span>
+        </div>
 
-        <p className="mb-6 text-slate-800">Choose how you'd like to practice today.</p>
+        <header>
+          <h2 className="mt-2 font-display text-3xl font-extrabold text-black tracking-tight">
+            {t("chooseTypeTitle")}
+          </h2>
+          <p className="mt-2 text-slate-800">
+            {t("chooseTypeSubtitle")}
+          </p>
+        </header>
 
         <div className="space-y-4">
           {(Object.keys(questionSets) as PracticeType[]).map((type) => (
             <button
               key={type}
               onClick={() => startPractice(type)}
-              className="w-full text-left p-6 bg-white border border-slate-300 rounded-lg shadow-sm
-                         hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+              className="w-full text-left p-5 bg-white border border-slate-200 rounded-xl shadow-sm
+                         hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600
+                         flex items-start gap-3"
             >
-              <h3 className="font-semibold text-lg text-slate-900">{type}</h3>
-              <p className="text-sm text-slate-800">
-                Practice with common {type.toLowerCase()} questions.
-              </p>
+              <div className="mt-1">
+                {type === "STAR Interview" && (
+                  <SparklesIcon className="h-6 w-6 text-violet-600" />
+                )}
+                {type === "Common Questions" && (
+                  <QuestionMarkCircleIcon className="h-6 w-6 text-blue-600" />
+                )}
+                {type === "Small Talk" && (
+                  <ChatBubbleLeftRightIcon className="h-6 w-6 text-teal-600" />
+                )}
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg text-slate-900">
+                  {practiceLabel(type)}
+                </h3>
+                <p className="mt-1 text-sm text-slate-800">
+                  {practiceDescription(type)}
+                </p>
+              </div>
             </button>
           ))}
         </div>
 
-        <div className="mt-8 flex items-center gap-3 p-3 bg-slate-100 rounded-lg border border-slate-300">
+        <div className="mt-4 flex items-start gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
           <input
             type="checkbox"
             id="calm-mode"
             checked={isCalmMode}
             onChange={() => setIsCalmMode(!isCalmMode)}
-            className="h-5 w-5 rounded text-blue-700 border-slate-400 focus:ring-blue-600"
+            className="mt-1 h-5 w-5 rounded border-slate-400 text-blue-700 focus:ring-blue-600"
           />
           <div>
-            <label htmlFor="calm-mode" className="font-semibold text-slate-900">
-              Enable Calm Practice Mode
+            <label
+              htmlFor="calm-mode"
+              className="flex items-center gap-2 font-semibold text-slate-900"
+            >
+              <HeartIcon className="h-5 w-5 text-rose-500" />
+              <span>{t("calmModeLabel")}</span>
             </label>
-            <p className="text-sm text-slate-800">Slower pace with breathing reminders.</p>
+            <p className="mt-1 text-sm text-slate-800">
+              {t("calmModeDescription")}
+            </p>
           </div>
         </div>
 
@@ -276,73 +369,161 @@ const InterviewPractice: React.FC = () => {
     );
   }
 
-  // practice / summary
-  return (
-    <div>
-      <button
-        onClick={resetPractice}
-        className="mb-4 text-sm font-semibold text-blue-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 rounded"
-      >
-        &larr; Back to Setup
-      </button>
+  /* -------------------------------- Render: PRACTICE / SUMMARY -------------------------------- */
 
-      <div className="p-4 bg-white rounded-lg border border-slate-300">
-        <p className="font-semibold text-blue-700 flex items-center">
-          Question {currentQuestionIndex + 1}/{questions.length}
-          {isBookmarked && (
-            <span className="ml-2 inline-flex items-center text-amber-700 text-sm">
-              <BookmarkIcon filled className="w-4 h-4 mr-1 text-amber-600" />
-              Saved
-            </span>
-          )}
-        </p>
-        <p className="text-lg text-slate-900">{currentQuestion}</p>
+  return (
+    <div className="space-y-6">
+      {/* Top bar: back + step label */}
+      <div className="flex items-center justify-between gap-3">
+        <button
+          onClick={resetPractice}
+          className="inline-flex items-center gap-1 text-sm font-semibold text-blue-700
+                     hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 rounded"
+        >
+          <ArrowLeftIcon className="h-4 w-4" />
+          <span>{t("backToSetup")}</span>
+        </button>
+
+        <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
+          <SparklesIcon className="h-4 w-4" />
+          <span>
+            {flowStep === "summary"
+              ? t("stepLabelSummary")
+              : t("stepLabelPractice")}
+          </span>
+        </div>
       </div>
 
+      {/* Question card */}
+      <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+          <p className="font-semibold text-blue-700 flex items-center gap-2">
+            <span>
+              {t("questionLabel")} {currentQuestionIndex + 1}{" "}
+              {questions.length > 0 && (
+                <>
+                  / {questions.length}{" "}
+                  <span className="text-slate-700">
+                    ({practiceLabel(practiceType)})
+                  </span>
+                </>
+              )}
+            </span>
+            {isBookmarked && (
+              <span className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-800 border border-amber-200">
+                <BookmarkIcon
+                  filled
+                  className="w-4 h-4 mr-1 text-amber-600"
+                />
+                {t("savedBadge")}
+              </span>
+            )}
+          </p>
+        </div>
+
+        <p className="text-lg text-slate-900 leading-relaxed">
+          {currentQuestion}
+        </p>
+
+        {practiceType === "STAR Interview" && (
+          <div className="mt-4 rounded-lg bg-slate-50 border border-slate-200 p-3 text-sm text-slate-800">
+            <p className="font-semibold mb-1">
+              {t("starHintTitle")}
+            </p>
+            <ul className="space-y-0.5">
+              <li>{t("starHintLine1")}</li>
+              <li>{t("starHintLine2")}</li>
+              <li>{t("starHintLine3")}</li>
+              <li>{t("starHintLine4")}</li>
+            </ul>
+          </div>
+        )}
+      </section>
+
+      {/* Calm mode banner */}
       {isCalmMode && (
-        <div className="my-4 p-3 bg-sky-50 text-slate-900 rounded-lg text-center font-medium border border-sky-200">
-          Take a deep breath. You're doing great.
+        <div className="flex items-start gap-2 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-sm text-slate-900">
+          <HeartIcon className="h-5 w-5 text-sky-600 mt-0.5" />
+          <p>{t("calmModeBanner")}</p>
         </div>
       )}
 
-      <div className="mt-6">
-        <div className="flex items-center justify-between mb-2">
-          <label htmlFor="answer" className="block text-lg font-medium text-slate-900">
-            Your Answer:
+      {/* Answer input */}
+      <section className="space-y-2">
+        <div className="flex items-center justify-between">
+          <label
+            htmlFor="answer"
+            className="block text-lg font-medium text-slate-900"
+          >
+            {t("yourAnswerLabel")}
           </label>
-          <VoiceInputButton onTextReceived={handleVoiceInput} />
+          <div className="flex items-center gap-2">
+            <Tooltip
+              content={
+                language === "en"
+                  ? "Use your voice if typing feels tiring."
+                  : "Dùng giọng nói nếu bạn thấy gõ phím mệt."
+              }
+            >
+              <div className="inline-flex items-center gap-1 text-sm text-slate-700">
+                <MicrophoneIcon className="h-4 w-4" />
+                <span>Voice</span>
+              </div>
+            </Tooltip>
+            <VoiceInputButton onTextReceived={handleVoiceInput} />
+          </div>
         </div>
+
         <textarea
           id="answer"
           rows={10}
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
-          placeholder="Type or use the microphone to speak your answer..."
+          placeholder={t("answerPlaceholder")}
           className="w-full p-3 bg-white text-slate-900 placeholder:text-slate-600
                      border border-slate-300 rounded-lg
-                     focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
-          disabled={isLoading || flowStep === "summary"}
+                     focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600
+                     leading-relaxed"
+          disabled={isLoading}
           maxLength={MAX_ANSWER_LENGTH}
           aria-invalid={!!error}
         />
-        <div className={`text-right text-sm mt-1 ${answer.length > MAX_ANSWER_LENGTH - 100 ? "text-red-700" : "text-slate-800"}`}>
-          {answer.length} / {MAX_ANSWER_LENGTH}
+        <div
+          className={`flex justify-between text-xs mt-1 ${
+            answer.length > MAX_ANSWER_LENGTH - 100
+              ? "text-red-700"
+              : "text-slate-700"
+          }`}
+        >
+          <span>
+            {answer.length} / {MAX_ANSWER_LENGTH} ·{" "}
+            {t("characterCountLabel")}
+          </span>
         </div>
-      </div>
+      </section>
 
-      {error && <p className="mt-2 text-red-700">{error}</p>}
+      {/* Error / calm message */}
+      {error && (
+        <p className="mt-1 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+          {error}
+        </p>
+      )}
 
+      {/* Summary / feedback */}
       {flowStep === "summary" && feedback && (
-        <div className="mt-8">
-          <h3 className="font-display text-2xl font-bold mb-4 text-slate-900">Session Summary</h3>
+        <section className="mt-4">
+          <h3 className="font-display text-2xl font-bold mb-4 text-slate-900">
+            {t("summaryTitle")}
+          </h3>
           <FeedbackDisplay
             feedback={feedback}
             suggestions={suggestions}
             isFetchingSuggestions={isFetchingSuggestions}
           />
-        </div>
+        </section>
       )}
 
+      {/* Controls (prev/next/skip/submit/bookmark) */}
       <QuestionControls
         flowStep={flowStep}
         isLoading={isLoading}
