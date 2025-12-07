@@ -1,8 +1,10 @@
 // src/content/interviewPracticeContent.ts
 import { Language } from "@/types";
 
+type PracticeTypeKey = "STAR Interview" | "Common Questions" | "Small Talk";
+
 export const INTERVIEW_PRACTICE_CONTENT = {
-  // General steps
+  /* ---------- Step labels ---------- */
   stepLabelSetup: {
     [Language.EN]: "Step 1 · Choose how you want to practice",
     [Language.VN]: "Bước 1 · Chọn cách bạn muốn luyện tập",
@@ -16,27 +18,29 @@ export const INTERVIEW_PRACTICE_CONTENT = {
     [Language.VN]: "Bước 3 · Xem lại phản hồi và bước tiếp theo",
   },
 
-  // Setup screen
+  /* ---------- Setup screen ---------- */
   chooseTypeTitle: {
-    [Language.EN]: "Choose Your Practice Type",
+    [Language.EN]: "Choose your practice type",
     [Language.VN]: "Chọn kiểu luyện tập",
   },
   chooseTypeSubtitle: {
-    [Language.EN]: "Pick one option. You can always change it later.",
-    [Language.VN]: "Chọn một tùy chọn. Bạn luôn có thể đổi sau.",
+    [Language.EN]:
+      "You can change this any time. There is no wrong choice.",
+    [Language.VN]:
+      "Bạn có thể thay đổi bất cứ lúc nào. Không có lựa chọn nào là sai.",
   },
 
   practiceTypeLabel: {
     [Language.EN]: {
       "STAR Interview": "STAR Interview",
-      "Common Questions": "Common Questions",
-      "Small Talk": "Small Talk",
-    },
+      "Common Questions": "Common interview questions",
+      "Small Talk": "Small talk warm-up",
+    } as Record<PracticeTypeKey, string>,
     [Language.VN]: {
       "STAR Interview": "Phỏng vấn STAR",
-      "Common Questions": "Câu hỏi thường gặp",
-      "Small Talk": "Trò chuyện nhẹ nhàng",
-    },
+      "Common Questions": "Câu hỏi phỏng vấn thường gặp",
+      "Small Talk": "Khởi động trò chuyện",
+    } as Record<PracticeTypeKey, string>,
   },
 
   practiceTypeDescription: {
@@ -44,48 +48,49 @@ export const INTERVIEW_PRACTICE_CONTENT = {
       "STAR Interview":
         "Practice structured answers using Situation, Task, Action, Result.",
       "Common Questions":
-        "Prepare for classic interview questions in a clear format.",
+        "Prepare for classic interview questions in a clear, simple way.",
       "Small Talk":
-        "Warm up with gentle conversation-style questions.",
-    },
+        "Gently warm up with low-pressure conversation-style questions.",
+    } as Record<PracticeTypeKey, string>,
     [Language.VN]: {
       "STAR Interview":
         "Luyện trả lời theo cấu trúc Situation, Task, Action, Result.",
       "Common Questions":
-        "Chuẩn bị cho các câu hỏi phỏng vấn phổ biến, rõ ràng.",
+        "Chuẩn bị cho các câu hỏi phỏng vấn phổ biến, rõ ràng và đơn giản.",
       "Small Talk":
-        "Khởi động với các câu hỏi trò chuyện nhẹ nhàng.",
-    },
+        "Khởi động nhẹ nhàng với các câu hỏi trò chuyện ít áp lực.",
+    } as Record<PracticeTypeKey, string>,
   },
 
   calmModeLabel: {
-    [Language.EN]: "Enable Calm Practice Mode",
-    [Language.VN]: "Bật Chế độ luyện tập nhẹ nhàng",
+    [Language.EN]: "Enable calm practice mode",
+    [Language.VN]: "Bật chế độ luyện tập nhẹ nhàng",
   },
   calmModeDescription: {
     [Language.EN]:
-      "Slower pace, gentle reminders, and no time pressure.",
+      "Slower pace, no timers, and gentle reminders. You can pause any time.",
     [Language.VN]:
-      "Nhịp độ chậm hơn, nhắc nhở nhẹ nhàng, không áp lực thời gian.",
+      "Nhịp độ chậm hơn, không có đồng hồ đếm, và nhắc nhở nhẹ nhàng. Bạn có thể tạm dừng bất cứ lúc nào.",
   },
 
   calmModeBanner: {
     [Language.EN]:
-      "You can pause, read again, and answer slowly. There is no time limit.",
+      "There is no time limit. You can re-read the question, think, and answer slowly.",
     [Language.VN]:
-      "Bạn có thể tạm dừng, đọc lại và trả lời từ từ. Không có giới hạn thời gian.",
+      "Không có giới hạn thời gian. Bạn có thể đọc lại câu hỏi, suy nghĩ và trả lời thật chậm.",
   },
 
   savedQuestionsTitle: {
-    [Language.EN]: "Saved Questions",
+    [Language.EN]: "Saved questions",
     [Language.VN]: "Câu hỏi đã lưu",
   },
 
-  // Practice view
+  /* ---------- Practice view ---------- */
   backToSetup: {
-    [Language.EN]: "Back to Practice Types",
+    [Language.EN]: "Back to practice types",
     [Language.VN]: "Quay lại chọn kiểu luyện tập",
   },
+
   questionLabel: {
     [Language.EN]: "Question",
     [Language.VN]: "Câu hỏi",
@@ -94,28 +99,21 @@ export const INTERVIEW_PRACTICE_CONTENT = {
     [Language.EN]: "of",
     [Language.VN]: "trên",
   },
+
+  currentModeLabel: {
+    [Language.EN]: "Mode",
+    [Language.VN]: "Chế độ",
+  },
+
   savedBadge: {
     [Language.EN]: "Saved",
     [Language.VN]: "Đã lưu",
   },
-  yourAnswerLabel: {
-    [Language.EN]: "Your answer",
-    [Language.VN]: "Câu trả lời của bạn",
-  },
-  answerPlaceholder: {
-    [Language.EN]:
-      "You can type, speak, or paste your answer here. It’s okay to take your time.",
-    [Language.VN]:
-      "Bạn có thể gõ, nói hoặc dán câu trả lời tại đây. Cứ bình tĩnh, không cần vội.",
-  },
-  characterCountLabel: {
-    [Language.EN]: "characters used",
-    [Language.VN]: "kí tự đã dùng",
-  },
 
+  // STAR hint block
   starHintTitle: {
-    [Language.EN]: "Need structure?",
-    [Language.VN]: "Cần cấu trúc rõ hơn?",
+    [Language.EN]: "STAR structure (optional guide)",
+    [Language.VN]: "Cấu trúc STAR (gợi ý tùy chọn)",
   },
   starHintLine1: {
     [Language.EN]: "S — Situation: What was happening?",
@@ -130,32 +128,86 @@ export const INTERVIEW_PRACTICE_CONTENT = {
     [Language.VN]: "A — Action: Bạn đã làm gì?",
   },
   starHintLine4: {
-    [Language.EN]: "R — Result: What changed because of your actions?",
-    [Language.VN]: "R — Result: Kết quả sau đó là gì?",
+    [Language.EN]:
+      "R — Result: What changed because of your actions?",
+    [Language.VN]:
+      "R — Result: Điều gì đã thay đổi nhờ hành động của bạn?",
   },
 
-  // Summary
+  /* ---------- Answer section ---------- */
+  yourAnswerLabel: {
+    [Language.EN]: "Your answer",
+    [Language.VN]: "Câu trả lời của bạn",
+  },
+
+  answerHelperTitle: {
+    [Language.EN]: "You can answer in a way that feels comfortable",
+    [Language.VN]: "Bạn có thể trả lời theo cách khiến bạn thấy thoải mái",
+  },
+
+  answerHelperList1: {
+    [Language.EN]: "Short sentences are okay.",
+    [Language.VN]: "Câu ngắn là được.",
+  },
+  answerHelperList2: {
+    [Language.EN]: "You do not need perfect grammar.",
+    [Language.VN]: "Bạn không cần ngữ pháp hoàn hảo.",
+  },
+  answerHelperList3: {
+    [Language.EN]: "You can pause and come back later.",
+    [Language.VN]: "Bạn có thể tạm dừng và quay lại sau.",
+  },
+
+  answerPlaceholder: {
+    [Language.EN]:
+      "You can type, paste, or speak your answer here. It is okay to take breaks.",
+    [Language.VN]:
+      "Bạn có thể gõ, dán hoặc nói câu trả lời tại đây. Nghỉ giữa chừng là bình thường.",
+  },
+
+  characterCountLabel: {
+    [Language.EN]: "characters used",
+    [Language.VN]: "kí tự đã dùng",
+  },
+
+  voiceLabel: {
+    [Language.EN]: "Voice",
+    [Language.VN]: "Giọng nói",
+  },
+  voiceTooltip: {
+    [Language.EN]: "Use your voice if typing feels tiring.",
+    [Language.VN]: "Dùng giọng nói nếu bạn thấy gõ phím mệt.",
+  },
+
+  /* ---------- Summary ---------- */
   summaryTitle: {
-    [Language.EN]: "Session Summary",
+    [Language.EN]: "Session summary",
     [Language.VN]: "Tóm tắt buổi luyện tập",
   },
 
-  // Errors / messages
+  /* ---------- System / messages ---------- */
   errorNoAnswer: {
-    [Language.EN]: "Please write or say a short answer before requesting feedback.",
+    [Language.EN]:
+      "Please write or say a short answer before requesting feedback.",
     [Language.VN]:
       "Vui lòng viết hoặc nói một câu trả lời ngắn trước khi xin phản hồi.",
   },
+
   unknownError: {
     [Language.EN]:
       "Something went wrong while getting feedback. You can try again in a moment.",
     [Language.VN]:
       "Đã có lỗi khi lấy phản hồi. Bạn có thể thử lại sau một chút.",
   },
-  endOfSetNotice: {
+
+  endOfSetNoticeTitle: {
+    [Language.EN]: "You reached the end of this set",
+    [Language.VN]: "Bạn đã hoàn thành bộ câu hỏi này",
+  },
+  endOfSetNoticeBody: {
     [Language.EN]:
-      "You’ve reached the end of this question set. You can go back and choose another type or repeat a question.",
+      "You can go back to choose a different practice type or repeat a question that felt useful.",
     [Language.VN]:
-      "Bạn đã hoàn thành bộ câu hỏi này. Bạn có thể quay lại để chọn kiểu khác hoặc luyện lại một câu hỏi.",
+      "Bạn có thể quay lại để chọn kiểu luyện tập khác hoặc luyện lại câu hỏi mà bạn thấy hữu ích.",
   },
 } as const;

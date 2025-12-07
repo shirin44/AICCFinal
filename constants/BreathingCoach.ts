@@ -1,6 +1,28 @@
 import { Language } from "@/types";
 
 export const BREATHING_CONTENT = {
+  ui: {
+    title: {
+      [Language.EN]: "Calm breathing",
+      [Language.VN]: "Bài thở bình tĩnh",
+    },
+    start: {
+      [Language.EN]: "Start",
+      [Language.VN]: "Bắt đầu",
+    },
+    pause: {
+      [Language.EN]: "Pause",
+      [Language.VN]: "Tạm dừng",
+    },
+    reset: {
+      [Language.EN]: "Reset",
+      [Language.VN]: "Đặt lại",
+    },
+    timingHint: {
+      [Language.EN]: "4 seconds in · 4 seconds hold · 6 seconds out",
+      [Language.VN]: "Hít 4 giây · Giữ 4 giây · Thở 6 giây",
+    },
+  },
   breatheIn: {
     [Language.EN]: "Breathe In",
     [Language.VN]: "Hít vào",
