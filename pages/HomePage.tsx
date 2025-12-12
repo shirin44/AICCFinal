@@ -184,27 +184,7 @@ const QuickFacts: React.FC = () => {
 };
 
 /* ---------- Sponsors ---------- */
-const Sponsors: React.FC = () => {
-  const { language } = React.useContext(AppContext);
-  const lang = normalizeLang(language);
-  const H = HOME_PAGE_CONTENT;
 
-  return (
-    <section className="py-12 sm:py-16 text-center px-4">
-      <h2 className="font-display text-xl sm:text-2xl font-bold text-muted-foreground mb-6 sm:mb-8">
-        {H.sponsors.title[lang]}
-      </h2>
-      <div className="flex flex-wrap justify-center items-center gap-6 sm:gap-10 md:gap-12 text-muted-foreground">
-    
-        <img
-          src="https://1000logos.net/wp-content/uploads/2019/07/RMIT-Logo.png"
-          alt="RMIT University Logo"
-          className="h-8 sm:h-10 md:h-12 w-auto"
-        />
-      </div>
-    </section>
-  );
-};
 
 /* ---------- Page ---------- */
 const HomePage: React.FC = () => {
@@ -224,7 +204,6 @@ const HomePage: React.FC = () => {
           <div className="space-y-12 sm:space-y-20">
             <NarratorSelection />
             <QuickFacts />
-            <Sponsors />
           </div>
         </div>
       </main>
