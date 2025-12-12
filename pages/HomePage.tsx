@@ -195,7 +195,7 @@ const Sponsors: React.FC = () => {
         {H.sponsors.title[lang]}
       </h2>
       <div className="flex flex-wrap justify-center items-center gap-6 sm:gap-10 md:gap-12 text-muted-foreground">
-        <span className="font-bold text-base sm:text-lg">{H.sponsors.labels.adc[lang]}</span>
+    
         <img
           src="https://1000logos.net/wp-content/uploads/2019/07/RMIT-Logo.png"
           alt="RMIT University Logo"
