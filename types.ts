@@ -167,11 +167,15 @@ export type PlaceholderKey =
   | "TROY"
   | "FINAL_SPRINT"
   | "REFLECTION"
-  | "GALLERY";
+  | "GALLERY"
+  | "ADC_WIN"
+  | "SPARK_HUB";
 
   export type StoryEntry = {
   id: string;
   date: { [key in Language]: string };
+  title?: { [key in Language]: string };
+  category?: { [key in Language]: string };
   body: { [key in Language]: string };
   placeholderKey: PlaceholderKey;
 };

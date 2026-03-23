@@ -5,425 +5,423 @@ import { AppContext } from "../App";
 import { Language } from "../types";
 import { OUR_STORY_CONTENT } from "@/constants/Ourstory";
 
-// --- Normalize language (enum or string) ---
 const normalizeLang = (l: unknown): Language =>
   l === Language.VN || l === "vi" || l === "VN" ? Language.VN : Language.EN;
 
-/* -----------------------------------------------------------
-   EAGERLY LOAD ALL MEDIA (base-aware, GH Pages safe)
------------------------------------------------------------ */
-const imgMods = import.meta.glob("/src/assets/images/OurStory/*", {
-  eager: true,
-  as: "url",
-});
-const vidMods = import.meta.glob("/src/assets/videos/OurStory/*", {
-  eager: true,
-  as: "url",
-});
-
+/* ── Media loader ── */
+const imgMods = import.meta.glob("/src/assets/images/OurStory/*", { eager: true, as: "url" });
+const vidMods = import.meta.glob("/src/assets/videos/OurStory/*", { eager: true, as: "url" });
 const byBasename = (mods: Record<string, string>) => {
   const out: Record<string, string> = {};
-  for (const p in mods) {
-    const name = p.split("/").pop()!;
-    out[name] = mods[p];
-  }
+  for (const p in mods) out[p.split("/").pop()!] = mods[p];
   return out;
 };
-
 const IMAGES = byBasename(imgMods);
 const VIDEOS = byBasename(vidMods);
+const imageUrl = (f?: string) => (f && IMAGES[f]) || "";
+const videoUrl = (f?: string) => (f && VIDEOS[f]) || "";
 
-// Return a url or empty string (so <img> can trigger onError)
-const imageUrl = (file?: string) => (file && IMAGES[file]) || "";
-const videoUrl = (file?: string) => (file && VIDEOS[file]) || "";
-
-/* -----------------------------------------------------------
-   Declarative mapping from placeholder keys → filenames
-   (ensure these match real files in src/assets/* with CORRECT case)
------------------------------------------------------------ */
+/* ── Placeholder key → filename maps ── */
 const MEDIA_IMAGE_MAP: Record<string, string | undefined> = {
-  TEAM_PHOTO: "ADC1.png",     // ✅ exists per your repo
-  BRAINSTORM: "team_photo.jpg",     // fallback if you don’t have a separate brainstorm photo
-  TEAM_CALL: "team_photo.jpg",      // adjust if you add team_call.jpg later
-  BOOTCAMP: "bootcamp.jpg",         // adjust if you store a bootcamp still
+  TEAM_PHOTO: "ADC1.png",
+  BRAINSTORM: "team_photo.jpg",
+  TEAM_CALL: "team_photo.jpg",
+  BOOTCAMP: "bootcamp.jpg",
   MEETING_THUY: "meeting_thuy.png",
-  IDEA_REFİNEMENT: "idea_refinement.jpg", // keep if old key is used somewhere
   IDEA_REFINEMENT: "idea_refinement.jpg",
   TEAM_LAUGH: "team_photo.jpg",
   SANDY_WORKSHOP: "sandy_workshop.jpg",
-  DRAFT: "proposal.JPG",            // use an existing still if draft.jpg doesn’t exist
+  DRAFT: "proposal.JPG",
   TRUNG_MEETING: "trung.jpg",
   SURVEY: "team_photo.jpg",
   FEEDBACK: "feedback.jpg",
   PROPOSAL: "proposal.JPG",
   KRISTEN: "kristen.png",
-  BUG: "prototype.png",             // use a close still if bug.jpg doesn’t exist
+  BUG: "prototype.png",
   CODING: "coding.jpg",
   SIMONA: "simona.png",
   TROY: "troy.jpg",
-  FINAL_SPRINT: "final_sprint.JPG", // ✅ case from your git status
-  REFLECTION: "reflection.jpg",     // if you don’t have a jpg, this will fall back to video
-  GALLERY: "gallery_bootcamp.jpg",  // optional default still if you add one
+  FINAL_SPRINT: "final_sprint.JPG",
+  REFLECTION: "reflection.jpg",
+  GALLERY: undefined,
+  ADC_WIN: "ADC2.png",
+  SPARK_HUB: "us.png",
 };
-
 const MEDIA_VIDEO_MAP: Record<string, string | undefined> = {
-  TEAM_PHOTO: undefined,
-  BRAINSTORM: undefined,
-  TEAM_CALL: undefined,
-  BOOTCAMP: "bootcamp.mov",
-  MEETING_THUY: undefined,
-  IDEA_REFINEMENT: "debate.mov",
-  TEAM_LAUGH: "team_laugh.mov",
-  SANDY_WORKSHOP: undefined,
-  DRAFT: undefined,
-  TRUNG_MEETING: undefined,
-  SURVEY: undefined,
-  FEEDBACK: undefined,
-  PROPOSAL: "proposal.MOV",   // change to your actual case if needed
-  KRISTEN: undefined,
-  BUG: undefined,
-  CODING: undefined,
-  SIMONA: undefined,
-  TROY: undefined,
-  FINAL_SPRINT: undefined,
-  REFLECTION: "reflection.MP4", // ✅ case from your git status
-  GALLERY: "bootcamp.mp4",
+  TEAM_PHOTO: undefined, BRAINSTORM: undefined, TEAM_CALL: undefined,
+  BOOTCAMP: "bootcamp.mov", MEETING_THUY: undefined, IDEA_REFINEMENT: "debate.mov",
+  TEAM_LAUGH: "team_laugh.mov", SANDY_WORKSHOP: undefined, DRAFT: undefined,
+  TRUNG_MEETING: undefined, SURVEY: undefined, FEEDBACK: undefined,
+  PROPOSAL: "proposal.MOV", KRISTEN: undefined, BUG: undefined, CODING: undefined,
+  SIMONA: undefined, TROY: undefined, FINAL_SPRINT: undefined,
+  REFLECTION: "reflection.MP4", GALLERY: "bootcamp.mp4",
+  ADC_WIN: undefined, SPARK_HUB: undefined,
 };
 
-/* -----------------------------------------------------------
-   PLACEHOLDER (supports fixed aspect ratio via aspectClass)
------------------------------------------------------------ */
-const PlaceholderMedia: React.FC<{
-  label: string;
-  aspectClass?: string;
-}> = ({ label, aspectClass }) => {
-  const aspect = aspectClass || "aspect-[16/9]";
-  return (
-    <div
-      className={`relative ${aspect} w-full overflow-hidden rounded-xl border-2 border-dashed border-border bg-gradient-to-br from-slate-50 to-slate-100`}
-    >
-      <div className="absolute inset-0 grid place-items-center">
-        <div className="rounded-lg bg-white/70 px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm">
-          {label}
-        </div>
-      </div>
+/* ── MediaBlock ── */
+const PlaceholderMedia: React.FC<{ label: string; aspectClass?: string }> = ({ label, aspectClass }) => (
+  <div className={`relative ${aspectClass || "aspect-[16/9]"} w-full overflow-hidden rounded-xl border-2 border-dashed border-border bg-gradient-to-br from-slate-50 to-slate-100`}>
+    <div className="absolute inset-0 grid place-items-center">
+      <span className="rounded-lg bg-white/70 px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm">{label}</span>
     </div>
-  );
-};
+  </div>
+);
 
-/* -----------------------------------------------------------
-   MEDIABLOCK
-   - Tries image; falls back to video if img 404/empty.
-   - frameAspectClass enforces identical visible size.
-   - fit = "cover" | "contain"
------------------------------------------------------------ */
 const MediaBlock: React.FC<{
-  placeholderKey: string;
-  alt: string;
-  placeholderLabel: string;
-  frameAspectClass?: string;
-  fit?: "cover" | "contain";
+  placeholderKey: string; alt: string; placeholderLabel: string;
+  frameAspectClass?: string; fit?: "cover" | "contain";
 }> = ({ placeholderKey, alt, placeholderLabel, frameAspectClass, fit = "cover" }) => {
   const [useVideo, setUseVideo] = useState(false);
-
   const imgFile = MEDIA_IMAGE_MAP[placeholderKey];
   const vidFile = MEDIA_VIDEO_MAP[placeholderKey];
   const imgSrc = imageUrl(imgFile);
   const vidSrc = videoUrl(vidFile);
   const hasImg = !!imgFile && !!imgSrc;
   const hasVid = !!vidFile && !!vidSrc;
-
   const fitClass = fit === "cover" ? "object-cover" : "object-contain";
 
-  const renderInFrame = (node: React.ReactNode) => (
-    <div
-      className={`relative w-full ${frameAspectClass || "aspect-[16/9]"} overflow-hidden rounded-xl bg-slate-100`}
-    >
+  const wrap = (node: React.ReactNode) => (
+    <div className={`relative w-full ${frameAspectClass || "aspect-[16/9]"} overflow-hidden rounded-xl bg-slate-100`}>
       <div className="absolute inset-0">{node}</div>
     </div>
   );
 
-  // Neither configured -> placeholder
-  if (!hasImg && !hasVid) {
-    return <PlaceholderMedia label={placeholderLabel} aspectClass={frameAspectClass} />;
-  }
+  if (!hasImg && !hasVid) return <PlaceholderMedia label={placeholderLabel} aspectClass={frameAspectClass} />;
 
-  // Try image first
   if (hasImg && !useVideo) {
-    const imgEl = (
-      <img
-        src={imgSrc}
-        alt={alt}
-        className={`h-full w-full ${fitClass} object-center rounded-xl`}
-        onError={() => {
-          if (hasVid) setUseVideo(true);
-        }}
-        loading="lazy"
-      />
-    );
-    return frameAspectClass ? (
-      renderInFrame(imgEl)
-    ) : (
-      <img
-        src={imgSrc}
-        alt={alt}
-        className="w-full h-auto rounded-xl object-cover"
-        onError={() => {
-          if (hasVid) setUseVideo(true);
-        }}
-        loading="lazy"
-      />
-    );
+    const el = <img src={imgSrc} alt={alt} className={`h-full w-full ${fitClass} object-center rounded-xl`} onError={() => { if (hasVid) setUseVideo(true); }} loading="lazy" />;
+    return frameAspectClass ? wrap(el) : <img src={imgSrc} alt={alt} className="w-full h-auto rounded-xl object-cover" onError={() => { if (hasVid) setUseVideo(true); }} loading="lazy" />;
   }
-
-  // Fallback: video
   if (hasVid) {
-    const videoEl = (
-      <video
-        className={`h-full w-full ${fitClass} object-center rounded-xl`}
-        controls
-        playsInline
-        preload="metadata"
-        src={vidSrc}
-      >
-        <track kind="captions" />
-      </video>
-    );
-    return frameAspectClass ? (
-      renderInFrame(videoEl)
-    ) : (
-      <video
-        className="w-full h-auto rounded-xl"
-        controls
-        playsInline
-        preload="metadata"
-        src={vidSrc}
-      >
-        <track kind="captions" />
-      </video>
-    );
+    const el = <video className={`h-full w-full ${fitClass} object-center rounded-xl`} controls playsInline preload="metadata" src={vidSrc}><track kind="captions" /></video>;
+    return frameAspectClass ? wrap(el) : <video className="w-full h-auto rounded-xl" controls playsInline preload="metadata" src={vidSrc}><track kind="captions" /></video>;
   }
-
-  // Last resort
   return <PlaceholderMedia label={placeholderLabel} aspectClass={frameAspectClass} />;
 };
 
-/* -----------------------------------------------------------
-   GALLERYMEDIA (for per-item galleryItems)
------------------------------------------------------------ */
-type GalleryItem = {
-  type: "image" | "video";
-  file: string;             // filename in assets or full URL
-  poster?: string;          // optional poster for videos
-  caption: Record<Language, string>;
-};
-
+/* ── GalleryMedia ── */
+type GalleryItem = { type: "image" | "video"; file: string; poster?: string; caption: Record<Language, string> };
 const isHttp = (p?: string) => !!p && /^https?:\/\//i.test(p);
-const resolveSrc = (type: GalleryItem["type"], file: string) =>
+const resolveSrc = (type: "image" | "video", file: string) =>
   isHttp(file) ? file : type === "image" ? imageUrl(file) : videoUrl(file);
-const resolvePoster = (poster?: string) =>
-  poster ? (isHttp(poster) ? poster : imageUrl(poster)) : undefined;
 
-const GalleryMedia: React.FC<{ item: GalleryItem; alt: string; aspect?: string; fit?: "cover" | "contain" }> = ({
-  item,
-  alt,
-  aspect = "aspect-[4/3]",
-  fit = "cover",
-}) => {
+const GalleryMedia: React.FC<{ item: GalleryItem; alt: string; aspect?: string }> = ({ item, alt, aspect = "aspect-[4/3]" }) => {
   const src = resolveSrc(item.type, item.file);
-  const poster = resolvePoster(item.poster);
-  const fitClass = fit === "cover" ? "object-cover" : "object-contain";
-
+  const poster = item.poster ? (isHttp(item.poster) ? item.poster : imageUrl(item.poster)) : undefined;
   return (
     <div className={`relative w-full ${aspect} overflow-hidden rounded-xl bg-slate-100`}>
-      {item.type === "image" ? (
-        <img
-          src={src}
-          alt={alt}
-          className={`absolute inset-0 h-full w-full ${fitClass} object-center`}
-          loading="lazy"
-        />
-      ) : (
-        <video
-          className={`absolute inset-0 h-full w-full ${fitClass} object-center`}
-          controls
-          playsInline
-          preload="metadata"
-          poster={poster}
-          src={src}
-        >
-          <track kind="captions" />
-        </video>
-      )}
+      {item.type === "image"
+        ? <img src={src} alt={alt} className="absolute inset-0 h-full w-full object-cover object-center" loading="lazy" />
+        : <video className="absolute inset-0 h-full w-full object-cover" controls playsInline preload="metadata" poster={poster} src={src}><track kind="captions" /></video>
+      }
     </div>
   );
 };
 
-/* ===========================================================
+/* ── Category tag color map ── */
+const categoryColor: Record<string, string> = {
+  Research: "bg-blue-100 text-blue-700",
+  Pivot: "bg-orange-100 text-orange-700",
+  "Mentor Session": "bg-violet-100 text-violet-700",
+  Workshop: "bg-emerald-100 text-emerald-700",
+  "Expert Consultation": "bg-teal-100 text-teal-700",
+  "Feedback Session": "bg-amber-100 text-amber-700",
+  Writing: "bg-pink-100 text-pink-700",
+  Building: "bg-cyan-100 text-cyan-700",
+  Breakthrough: "bg-green-100 text-green-700",
+  "Strategy Session": "bg-indigo-100 text-indigo-700",
+  "Final Sprint": "bg-red-100 text-red-700",
+  "\uD83C\uDFC6 Award": "bg-yellow-100 text-yellow-700",
+  "\uD83C\uDF1F Recognition": "bg-purple-100 text-purple-700",
+};
+const getCatClass = (cat?: string) =>
+  (cat && categoryColor[cat]) || "bg-slate-100 text-slate-700";
+
+/* ═══════════════════════════════════════════════════════
    PAGE
-=========================================================== */
+═══════════════════════════════════════════════════════ */
 const OurStoryPage: React.FC = () => {
   const { language } = useContext(AppContext);
   const lang = normalizeLang(language);
-
   const UI = OUR_STORY_CONTENT.ui;
   const P = UI.placeholders;
+  const marqueeItems = OUR_STORY_CONTENT.marqueeItems[lang];
 
   return (
     <Layout>
-      {/* HERO */}
-      <section className="relative mb-10 overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-blue-50 via-violet-50 to-pink-50 p-10">
+
+      {/* ══ HERO ══════════════════════════════════════════════ */}
+      <section className="relative mb-10 overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-blue-50 via-violet-50 to-pink-50 p-8 md:p-10">
         <div className="pointer-events-none absolute -top-24 -right-24 h-64 w-64 rounded-full bg-blue-400/20 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-fuchsia-400/20 blur-3xl" />
         <div className="sparkles" aria-hidden="true" />
-        <h1 className="font-display text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900">
-          {UI.heroTitle[lang]}
-        </h1>
-        <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-[1fr,420px]">
-          <p className="whitespace-pre-line text-lg text-slate-800">
-            {OUR_STORY_CONTENT.intro[lang]}
+
+        <div className="relative">
+          {/* RMIT feature link */}
+          <a
+            href={OUR_STORY_CONTENT.rmitArticleUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mb-4 inline-flex items-center gap-2 rounded-full border border-violet-300 bg-white/80 px-3 py-1 text-xs font-semibold text-violet-700 shadow-sm backdrop-blur-sm hover:bg-white transition-colors"
+          >
+            📣 {UI.rmitBadge[lang]}
+          </a>
+
+          <h1 className="font-display text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
+            NeuroAICC
+          </h1>
+          <p className="mt-1 text-lg font-semibold text-primary">{UI.heroTitle[lang]}</p>
+          <p className="mt-3 text-2xl md:text-3xl font-bold text-slate-800 leading-snug">
+            {UI.heroTagline[lang]}
           </p>
-          <div className="rounded-2xl border border-border bg-white p-4 shadow-md">
-            <MediaBlock
-              placeholderKey="TEAM_PHOTO"
-              alt="Team"
-              placeholderLabel={P.TEAM_PHOTO[lang]}
-            />
+
+          <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-[1fr,400px]">
+            <p className="text-base text-slate-700 leading-relaxed max-w-xl">
+              {UI.heroCopy[lang]}
+            </p>
+            <div className="rounded-2xl border border-border bg-white p-4 shadow-md">
+              <MediaBlock placeholderKey="TEAM_PHOTO" alt="Team" placeholderLabel={P.TEAM_PHOTO[lang]} />
+            </div>
           </div>
         </div>
       </section>
 
-      {/* TIMELINE */}
-      <section className="mb-12">
-        <h2 className="font-display text-3xl font-bold text-slate-900">
-          {UI.diary[lang]}
-        </h2>
-        <div className="mt-6 space-y-8">
-          {OUR_STORY_CONTENT.entries.map((e, idx) => (
-            <article
-              key={idx}
-              className={`grid items-start gap-6 md:grid-cols-2 ${
-                idx % 2 === 1 ? "md:[&>*:first-child]:order-2" : ""
-              }`}
-            >
-              <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-                <p className="text-sm font-semibold text-primary">{e.date[lang]}</p>
-                {e.title?.[lang] && (
-                  <h3 className="mt-1 font-display text-xl font-bold text-foreground">
-                    {e.title[lang]}
-                  </h3>
-                )}
-                <p className="mt-3 whitespace-pre-line text-slate-800">{e.body[lang]}</p>
-              </div>
+      {/* ══ MARQUEE TICKER ════════════════════════════════════ */}
+      <div className="mb-10 overflow-hidden rounded-2xl border border-border bg-card py-3 shadow-sm">
+        <div className="marquee-track flex gap-8 whitespace-nowrap">
+          {[...marqueeItems, ...marqueeItems].map((item, i) => (
+            <span key={i} className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-700 shrink-0">
+              {item}
+              <span className="text-border mx-1">·</span>
+            </span>
+          ))}
+        </div>
+      </div>
 
-              <div className="rounded-2xl border border-border bg-white p-4 shadow-md">
-                <MediaBlock
-                  placeholderKey={e.placeholderKey}
-                  alt={e.title?.[lang] || e.date[lang]}
-                  placeholderLabel={P[e.placeholderKey][lang]}
-                  frameAspectClass="aspect-[4/3]"
-                  fit="cover"
-                />
+      {/* ══ 01 THE TEAM ═══════════════════════════════════════ */}
+      <section className="mb-12">
+        <div className="flex items-center gap-3 mb-6">
+          <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary uppercase tracking-widest">01</span>
+          <h2 className="font-display text-3xl font-bold text-slate-900">{UI.team[lang]}</h2>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-3">
+          {OUR_STORY_CONTENT.team.map((member, i) => (
+            <div key={i} className="rounded-2xl border border-border bg-card p-6 shadow-sm flex flex-col gap-2">
+              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-primary font-bold text-lg">
+                {member.name.charAt(0)}
               </div>
-            </article>
+              <p className="text-xs font-semibold text-primary mt-1">{member.role[lang]}</p>
+              <h3 className="font-display text-lg font-bold text-foreground leading-tight">{member.name}</h3>
+              <p className="text-xs text-muted-foreground">{member.school}</p>
+              <p className="text-sm text-slate-700 leading-relaxed mt-1">{member.bio[lang]}</p>
+            </div>
           ))}
         </div>
       </section>
 
-      {/* REFLECTIONS */}
+      {/* ══ 02 THE JOURNEY ════════════════════════════════════ */}
       <section className="mb-12">
-        <div className="grid gap-6 md:grid-cols-[1fr,420px]">
+        <div className="flex items-center gap-3 mb-6">
+          <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary uppercase tracking-widest">02</span>
+          <h2 className="font-display text-3xl font-bold text-slate-900">{UI.diary[lang]}</h2>
+        </div>
+
+        <div className="space-y-8">
+          {OUR_STORY_CONTENT.entries.map((e, idx) => {
+            const isAward = e.id === "adc-result" || e.id === "spark-hub";
+            return (
+              <article
+                key={idx}
+                className={`grid items-start gap-6 md:grid-cols-2 ${
+                  idx % 2 === 1 ? "md:[&>*:first-child]:order-2" : ""
+                }`}
+              >
+                <div className={`rounded-2xl border p-6 shadow-sm ${
+                  isAward
+                    ? "border-primary/30 bg-gradient-to-br from-blue-50 to-violet-50"
+                    : "border-border bg-card"
+                }`}>
+                  <div className="flex flex-wrap items-center gap-2 mb-2">
+                    <span className="text-sm font-bold text-primary">{e.date[lang]}</span>
+                    {e.category?.[lang] && (
+                      <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${getCatClass(e.category[Language.EN])}`}>
+                        {e.category[lang]}
+                      </span>
+                    )}
+                  </div>
+                  {e.title?.[lang] && (
+                    <h3 className="font-display text-xl font-bold text-foreground mb-3">{e.title[lang]}</h3>
+                  )}
+                  <p className="whitespace-pre-line text-slate-800 leading-relaxed text-sm">{e.body[lang]}</p>
+
+                  {/* Sandy quote — injected after the Sandy Workshop entry */}
+                  {e.id === "0820" && (
+                    <blockquote className="mt-4 rounded-xl bg-amber-50 border border-amber-200 p-4">
+                      <p className="text-sm italic text-slate-700 leading-relaxed">
+                        &ldquo;{OUR_STORY_CONTENT.sandyQuote[lang]}&rdquo;
+                      </p>
+                      <footer className="mt-2 text-xs font-semibold text-amber-700">
+                        — {OUR_STORY_CONTENT.sandyQuoteAttr[lang]}
+                      </footer>
+                    </blockquote>
+                  )}
+                </div>
+
+                <div className="rounded-2xl border border-border bg-white p-4 shadow-md">
+                  <MediaBlock
+                    placeholderKey={e.placeholderKey}
+                    alt={e.title?.[lang] || e.date[lang]}
+                    placeholderLabel={P[e.placeholderKey]?.[lang] ?? e.placeholderKey}
+                    frameAspectClass="aspect-[4/3]"
+                    fit="cover"
+                  />
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ══ STATS BANNER ══════════════════════════════════════ */}
+      <section className="mb-12 rounded-3xl border border-border bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 p-8 shadow-sm">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          {OUR_STORY_CONTENT.stats.map((s, i) => (
+            <div key={i} className="flex flex-col items-center gap-1">
+              <span className="font-display text-4xl font-extrabold text-primary">{s.value}</span>
+              <span className="text-sm text-muted-foreground leading-snug max-w-[12ch]">{s.label[lang]}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ══ 03 RECOGNITION ════════════════════════════════════ */}
+      <section className="mb-12">
+        <div className="flex items-center gap-3 mb-6">
+          <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary uppercase tracking-widest">03</span>
+          <h2 className="font-display text-3xl font-bold text-slate-900">{UI.recognition[lang]}</h2>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-3">
+          {OUR_STORY_CONTENT.achievements.map((a, i) => (
+            <div key={i} className={`rounded-2xl border bg-gradient-to-br ${a.color} p-6 shadow-sm flex flex-col gap-2`}>
+              <div className="text-3xl">{a.icon}</div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{a.label[lang]}</p>
+              <h3 className="font-display text-xl font-bold text-slate-900 leading-tight">{a.title[lang]}</h3>
+              <p className="text-sm text-slate-700 leading-relaxed">{a.body[lang]}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* RMIT article CTA */}
+        <div className="mt-4 rounded-2xl border border-violet-200 bg-violet-50/60 p-5 flex flex-col sm:flex-row sm:items-center gap-3">
+          <p className="text-sm text-slate-700 flex-1">
+            {lang === Language.VN
+              ? "RMIT Việt Nam đã chia sẻ câu chuyện của chúng tôi — về tác động xã hội, thiết kế tiếp cận và sứ mệnh phía sau NeuroAICC."
+              : "RMIT Vietnam covered our story — the social impact, the accessibility focus, and the mission behind NeuroAICC."}
+          </p>
+          <a
+            href={OUR_STORY_CONTENT.rmitArticleUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow hover:opacity-90 transition-opacity"
+          >
+            {UI.rmitBadge[lang]}
+          </a>
+        </div>
+      </section>
+
+      {/* ══ WHY THIS MATTERS ══════════════════════════════════ */}
+      <section className="mb-12">
+        <div className="rounded-3xl border border-border bg-gradient-to-br from-indigo-50 via-violet-50 to-pink-50 p-8 shadow-sm">
+          <h2 className="font-display text-3xl font-bold text-slate-900 mb-4">{UI.impact[lang]}</h2>
+          <p className="whitespace-pre-line text-slate-800 leading-relaxed max-w-3xl">
+            {OUR_STORY_CONTENT.impact[lang]}
+          </p>
+        </div>
+      </section>
+
+      {/* ══ WHAT WE LEARNED ═══════════════════════════════════ */}
+      <section className="mb-12">
+        <h2 className="font-display text-3xl font-bold text-slate-900 mb-6">{UI.lessons[lang]}</h2>
+        <div className="rounded-3xl border border-border bg-card p-8 shadow-sm space-y-4">
+          {OUR_STORY_CONTENT.lessons[lang].map((lesson, i) => (
+            <div key={i} className="flex items-start gap-4">
+              <span className="mt-0.5 shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary">→</span>
+              <p className="text-slate-800 leading-relaxed">{lesson}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ══ REFLECTIONS ═══════════════════════════════════════ */}
+      <section className="mb-12">
+        <div className="grid gap-6 md:grid-cols-[1fr,400px]">
           <div className="rounded-3xl border border-border bg-gradient-to-br from-amber-50 to-rose-50 p-8 shadow-sm">
-            <h2 className="font-display text-3xl font-bold text-slate-900">
-              {UI.reflections[lang]}
-            </h2>
-            <p className="mt-4 whitespace-pre-line text-slate-800">
+            <h2 className="font-display text-3xl font-bold text-slate-900">{UI.reflections[lang]}</h2>
+            <p className="mt-4 whitespace-pre-line text-slate-800 leading-relaxed">
               {OUR_STORY_CONTENT.reflections[lang]}
             </p>
           </div>
           <div className="rounded-3xl border border-border bg-white p-4 shadow-md">
-            <MediaBlock
-              placeholderKey="REFLECTION"
-              alt="Reflection"
-              placeholderLabel={P.REFLECTION[lang]}
-            />
+            <MediaBlock placeholderKey="REFLECTION" alt="Reflection" placeholderLabel={P.REFLECTION[lang]} />
           </div>
         </div>
       </section>
 
-      {/* APPRECIATION */}
+      {/* ══ WITH GRATITUDE ════════════════════════════════════ */}
       <section className="mb-12 rounded-3xl border border-border bg-card p-8 shadow-sm">
-        <h2 className="font-display text-3xl font-bold text-slate-900">
-          {UI.appreciation[lang]}
-        </h2>
-        <ul className="mt-4 space-y-3">
-          {OUR_STORY_CONTENT.appreciation[lang].map((line, i) => (
-            <li key={i} className="flex items-start gap-3">
-              <span className="mt-1 inline-block h-2 w-2 rounded-full bg-primary" />
-              <p className="text-slate-800">{line}</p>
-            </li>
-          ))}
-        </ul>
+        <h2 className="font-display text-3xl font-bold text-slate-900 mb-6">{UI.appreciation[lang]}</h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {OUR_STORY_CONTENT.appreciation[lang].map((line, i) => {
+            const [nameRole, ...rest] = line.split(" — ");
+            return (
+              <div key={i} className="flex items-start gap-3 rounded-2xl border border-border bg-white p-4 shadow-sm">
+                <span className="mt-1 shrink-0 h-2 w-2 rounded-full bg-primary" />
+                <div>
+                  <p className="text-sm font-bold text-foreground">{nameRole}</p>
+                  <p className="text-sm text-slate-600 leading-relaxed mt-0.5">{rest.join(" — ")}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </section>
 
-      {/* MEDIA GALLERY */}
+      {/* ══ MEDIA GALLERY ═════════════════════════════════════ */}
       <section className="mb-4">
-        <h2 className="font-display text-3xl font-bold text-slate-900">
-          {UI.media[lang]}
-        </h2>
-
-        {Array.isArray((OUR_STORY_CONTENT as any).galleryItems) &&
-        (OUR_STORY_CONTENT as any).galleryItems.length > 0 ? (
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {(OUR_STORY_CONTENT as any).galleryItems.map((item: any, i: number) => (
-              <div key={i} className="rounded-2xl border border-border bg-white p-4 shadow-sm">
-                <GalleryMedia
-                  item={item}
-                  alt={item.caption[lang]}
-                  aspect="aspect-[4/3]"
-                  fit="cover"
-                />
-                <p className="mt-2 text-center text-sm font-medium text-slate-700">
-                  {item.caption[lang]}
-                </p>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {OUR_STORY_CONTENT.gallery?.[lang]?.map((g, i) => (
-              <div key={i} className="rounded-2xl border border-border bg-white p-4 shadow-sm">
-                <MediaBlock
-                  placeholderKey="GALLERY"
-                  alt={g}
-                  placeholderLabel={UI.placeholders.GALLERY[lang]}
-                  frameAspectClass="aspect-[4/3]"
-                  fit="cover"
-                />
-                <p className="mt-2 text-center text-sm font-medium text-slate-700">{g}</p>
-              </div>
-            )) || null}
-          </div>
-        )}
+        <h2 className="font-display text-3xl font-bold text-slate-900 mb-4">{UI.media[lang]}</h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {(OUR_STORY_CONTENT.galleryItems as any[]).map((item: any, i: number) => (
+            <div key={i} className="rounded-2xl border border-border bg-white p-4 shadow-sm">
+              <GalleryMedia item={item} alt={item.caption[lang]} aspect="aspect-[4/3]" />
+              <p className="mt-2 text-center text-sm font-medium text-slate-700">{item.caption[lang]}</p>
+            </div>
+          ))}
+        </div>
       </section>
 
-      {/* inline wow-effects */}
+      {/* ── inline styles ── */}
       <style>{`
         .sparkles {
-          position: absolute;
-          inset: 0;
+          position: absolute; inset: 0;
           background:
             radial-gradient(2px 2px at 20% 30%, rgba(59,130,246,.6) 50%, transparent 51%) repeat,
             radial-gradient(2px 2px at 70% 60%, rgba(168,85,247,.55) 50%, transparent 51%) repeat,
             radial-gradient(2px 2px at 40% 80%, rgba(236,72,153,.5) 50%, transparent 51%) repeat;
           background-size: 180px 180px, 220px 220px, 200px 200px;
           animation: sparkleMove 18s linear infinite;
-          opacity: .45;
-          pointer-events: none;
+          opacity: .45; pointer-events: none;
         }
         @keyframes sparkleMove {
           0% { background-position: 0 0, 0 0, 0 0; }
           100% { background-position: 180px 180px, -220px 220px, 200px -200px; }
+        }
+        .marquee-track {
+          animation: marquee 35s linear infinite;
+          display: inline-flex;
+        }
+        @keyframes marquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
         }
       `}</style>
     </Layout>
