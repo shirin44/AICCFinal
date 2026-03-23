@@ -4,6 +4,7 @@ import Layout from "../components/Layout";
 import { AppContext } from "../App";
 import { Language } from "../types";
 import { OUR_STORY_CONTENT } from "@/constants/Ourstory";
+import { Award, Mic2, Rocket, ExternalLink, ChevronRight } from "lucide-react";
 
 const normalizeLang = (l: unknown): Language =>
   l === Language.VN || l === "vi" || l === "VN" ? Language.VN : Language.EN;
@@ -118,6 +119,13 @@ const GalleryMedia: React.FC<{ item: GalleryItem; alt: string; aspect?: string }
   );
 };
 
+/* ── Achievement icon map ── */
+const ACHIEVEMENT_ICONS: Record<string, React.ReactNode> = {
+  Award:  <Award  className="h-5 w-5 text-primary" />,
+  Mic2:   <Mic2   className="h-5 w-5 text-primary" />,
+  Rocket: <Rocket className="h-5 w-5 text-primary" />,
+};
+
 /* ── Category tag color map ── */
 const categoryColor: Record<string, string> = {
   Research: "bg-blue-100 text-blue-700",
@@ -131,8 +139,8 @@ const categoryColor: Record<string, string> = {
   Breakthrough: "bg-green-100 text-green-700",
   "Strategy Session": "bg-indigo-100 text-indigo-700",
   "Final Sprint": "bg-red-100 text-red-700",
-  "\uD83C\uDFC6 Award": "bg-yellow-100 text-yellow-700",
-  "\uD83C\uDF1F Recognition": "bg-purple-100 text-purple-700",
+  Award: "bg-yellow-100 text-yellow-700",
+  Recognition: "bg-purple-100 text-purple-700",
 };
 const getCatClass = (cat?: string) =>
   (cat && categoryColor[cat]) || "bg-slate-100 text-slate-700";
@@ -164,7 +172,8 @@ const OurStoryPage: React.FC = () => {
             rel="noopener noreferrer"
             className="mb-4 inline-flex items-center gap-2 rounded-full border border-violet-300 bg-white/80 px-3 py-1 text-xs font-semibold text-violet-700 shadow-sm backdrop-blur-sm hover:bg-white transition-colors"
           >
-            📣 {UI.rmitBadge[lang]}
+            <ExternalLink className="h-3.5 w-3.5" />
+            {UI.rmitBadge[lang]}
           </a>
 
           <h1 className="font-display text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
@@ -198,26 +207,7 @@ const OurStoryPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ══ 01 THE TEAM ═══════════════════════════════════════ */}
-      <section className="mb-12">
-        <div className="flex items-center gap-3 mb-6">
-          <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary uppercase tracking-widest">01</span>
-          <h2 className="font-display text-3xl font-bold text-slate-900">{UI.team[lang]}</h2>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-3">
-          {OUR_STORY_CONTENT.team.map((member, i) => (
-            <div key={i} className="rounded-2xl border border-border bg-card p-6 shadow-sm flex flex-col gap-2">
-              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-primary font-bold text-lg">
-                {member.name.charAt(0)}
-              </div>
-              <p className="text-xs font-semibold text-primary mt-1">{member.role[lang]}</p>
-              <h3 className="font-display text-lg font-bold text-foreground leading-tight">{member.name}</h3>
-              <p className="text-xs text-muted-foreground">{member.school}</p>
-              <p className="text-sm text-slate-700 leading-relaxed mt-1">{member.bio[lang]}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+   
 
       {/* ══ 02 THE JOURNEY ════════════════════════════════════ */}
       <section className="mb-12">
@@ -303,7 +293,7 @@ const OurStoryPage: React.FC = () => {
         <div className="grid gap-4 sm:grid-cols-3">
           {OUR_STORY_CONTENT.achievements.map((a, i) => (
             <div key={i} className={`rounded-2xl border bg-gradient-to-br ${a.color} p-6 shadow-sm flex flex-col gap-2`}>
-              <div className="text-3xl">{a.icon}</div>
+              <div className="mb-1">{ACHIEVEMENT_ICONS[a.icon]}</div>
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{a.label[lang]}</p>
               <h3 className="font-display text-xl font-bold text-slate-900 leading-tight">{a.title[lang]}</h3>
               <p className="text-sm text-slate-700 leading-relaxed">{a.body[lang]}</p>
@@ -324,7 +314,8 @@ const OurStoryPage: React.FC = () => {
             rel="noopener noreferrer"
             className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow hover:opacity-90 transition-opacity"
           >
-            {UI.rmitBadge[lang]}
+            <ExternalLink className="h-4 w-4" />
+            {lang === Language.VN ? "Đọc bài viết" : "Read article"}
           </a>
         </div>
       </section>
@@ -345,7 +336,7 @@ const OurStoryPage: React.FC = () => {
         <div className="rounded-3xl border border-border bg-card p-8 shadow-sm space-y-4">
           {OUR_STORY_CONTENT.lessons[lang].map((lesson, i) => (
             <div key={i} className="flex items-start gap-4">
-              <span className="mt-0.5 shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary">→</span>
+              <ChevronRight className="mt-0.5 shrink-0 h-4 w-4 text-primary" />
               <p className="text-slate-800 leading-relaxed">{lesson}</p>
             </div>
           ))}

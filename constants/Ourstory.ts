@@ -124,20 +124,20 @@ export const OUR_STORY_CONTENT: OurStoryContent = {
 
   marqueeItems: {
     [Language.EN]: [
-      "🥈 First Runner-Up · ADC 2025",
-      "🎤 Best Presentation · RMIT SPARKHub",
-      "🚀 Selected · RMIT SPARKHub Incubation 2025",
-      "📣 Featured by RMIT Vietnam",
-      "🇻🇳 Vietnam's First Bilingual Platform for Autistic Job Seekers",
-      "🏥 Clinic Adoption Interest · HCMC Child Development Dept.",
+      "First Runner-Up · ADC 2025",
+      "Best Presentation · RMIT SPARKHub",
+      "Selected · RMIT SPARKHub Incubation 2025",
+      "Featured by RMIT Vietnam",
+      "Vietnam's First Bilingual Platform for Autistic Job Seekers",
+      "Clinic Adoption Interest · HCMC Child Development Dept.",
     ],
     [Language.VN]: [
-      "🥈 Á Quân · ADC 2025",
-      "🎤 Thuyết trình Xuất sắc nhất · RMIT SPARKHub",
-      "🚀 Được chọn · Ươm tạo RMIT SPARKHub 2025",
-      "📣 Được giới thiệu bởi RMIT Việt Nam",
-      "🇻🇳 Nền tảng Song ngữ Đầu tiên cho Ứng viên Tự kỷ tại Việt Nam",
-      "🏥 Quan tâm Ứng dụng Lâm sàng · Sở Phát triển Trẻ em TPHCM",
+      "Á Quân · ADC 2025",
+      "Thuyết trình Xuất sắc nhất · RMIT SPARKHub",
+      "Được chọn · Ươm tạo RMIT SPARKHub 2025",
+      "Được giới thiệu bởi RMIT Việt Nam",
+      "Nền tảng Song ngữ Đầu tiên cho Ứng viên Tự kỷ tại Việt Nam",
+      "Quan tâm Ứng dụng Lâm sàng · Sở Phát triển Trẻ em TPHCM",
     ],
   },
 
@@ -440,7 +440,7 @@ export const OUR_STORY_CONTENT: OurStoryContent = {
     {
       id: "adc-result",
       date: { [Language.EN]: "ADC Final", [Language.VN]: "Chung kết ADC" },
-      category: { [Language.EN]: "🏆 Award", [Language.VN]: "🏆 Giải thưởng" },
+      category: { [Language.EN]: "Award", [Language.VN]: "Giải thưởng" },
       title: {
         [Language.EN]: "First Runner-Up at ADC 2025",
         [Language.VN]: "Á Quân tại ADC 2025",
@@ -456,7 +456,7 @@ export const OUR_STORY_CONTENT: OurStoryContent = {
     {
       id: "spark-hub",
       date: { [Language.EN]: "SPARK Hub", [Language.VN]: "SPARK Hub" },
-      category: { [Language.EN]: "🌟 Recognition", [Language.VN]: "🌟 Ghi nhận" },
+      category: { [Language.EN]: "Recognition", [Language.VN]: "Ghi nhận" },
       title: {
         [Language.EN]: "SPARKHub Incubation & Best Presentation",
         [Language.VN]: "Ươm tạo SPARKHub & Thuyết trình Xuất sắc nhất",
@@ -480,7 +480,7 @@ export const OUR_STORY_CONTENT: OurStoryContent = {
 
   achievements: [
     {
-      icon: "🥈",
+      icon: "Award",
       label: { [Language.EN]: "ADC 2025 · RMIT Vietnam", [Language.VN]: "ADC 2025 · RMIT Việt Nam" },
       title: { [Language.EN]: "First Runner-Up", [Language.VN]: "Á Quân" },
       body: {
@@ -492,7 +492,7 @@ export const OUR_STORY_CONTENT: OurStoryContent = {
       color: "from-blue-50 to-indigo-50 border-blue-200",
     },
     {
-      icon: "🎤",
+      icon: "Mic2",
       label: { [Language.EN]: "RMIT SPARKHub Incubation", [Language.VN]: "Ươm tạo RMIT SPARKHub" },
       title: { [Language.EN]: "Best Presentation", [Language.VN]: "Thuyết trình Xuất sắc nhất" },
       body: {
@@ -504,7 +504,7 @@ export const OUR_STORY_CONTENT: OurStoryContent = {
       color: "from-violet-50 to-purple-50 border-violet-200",
     },
     {
-      icon: "🚀",
+      icon: "Rocket",
       label: { [Language.EN]: "RMIT SPARKHub · 2025", [Language.VN]: "RMIT SPARKHub · 2025" },
       title: { [Language.EN]: "Incubation Selection", [Language.VN]: "Được Chọn vào Ươm tạo" },
       body: {
