@@ -196,7 +196,7 @@ const InterviewPractice: React.FC = () => {
     setSuggestions({});
 
     try {
-      const fb = await getInterviewFeedback(currentQuestion, answer);
+      const fb = await getInterviewFeedback(currentQuestion, answer, language);
       setFeedback(fb);
       setFlowStep("summary");
 
@@ -226,7 +226,8 @@ const InterviewPractice: React.FC = () => {
             getImprovementSuggestion(
               currentQuestion,
               answer,
-              (comp.charAt(0).toUpperCase() + comp.slice(1)) as any
+              (comp.charAt(0).toUpperCase() + comp.slice(1)) as any,
+              language
             ).then((res) => ({ [comp]: res.suggestion }))
           )
         );

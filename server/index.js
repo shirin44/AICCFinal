@@ -10,7 +10,8 @@ dotenv.config({ path: resolve(__dirname, '../.env') });
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+const FEEDBACK_MODEL = 'gpt-4o';
+const UTILITY_MODEL  = process.env.OPENAI_MODEL || 'gpt-4o-mini';
 const TIMEOUT_MS = 30_000;
 
 const openai = new OpenAI({ apiKey: process.env.API_KEY, timeout: TIMEOUT_MS });
@@ -30,9 +31,10 @@ app.use(cors({
 }));
 app.use(express.json());
 
-async function chat(systemPrompt, userContent) {
+async function chat(systemPrompt, userContent, { model = UTILITY_MODEL, temperature = 0.5 } = {}) {
   const completion = await openai.chat.completions.create({
-    model: MODEL,
+    model,
+    temperature,
     response_format: { type: 'json_object' },
     messages: [
       { role: 'system', content: systemPrompt },
@@ -44,12 +46,17 @@ async function chat(systemPrompt, userContent) {
 
 // POST /api/interview-feedback
 app.post('/api/interview-feedback', async (req, res) => {
-  const { question, answer } = req.body;
+  const { question, answer, language } = req.body;
   if (!question || !answer) return res.status(400).json({ error: 'question and answer are required' });
+
+  const langInstruction = language === 'vi'
+    ? 'Write ALL feedback, strengths, and the revisedAnswer in Vietnamese.'
+    : 'Write ALL feedback, strengths, and the revisedAnswer in English.';
 
   try {
     const result = await chat(
       `You are a warm, supportive interview coach helping neurodivergent job seekers (especially autistic people) build confidence.
+${langInstruction}
 
 Analyze the candidate's answer using the STAR method (Situation, Task, Action, Result).
 
@@ -61,7 +68,7 @@ SCORING RUBRIC (use this consistently):
 - 5 = Excellent — clear, specific, compelling, and well-structured
 
 TONE RULES:
-- Use plain, simple English. Avoid jargon.
+- Use plain, simple language. Avoid jargon.
 - Be specific and kind. Lead with what they did well before suggesting improvements.
 - Use gentle phrases: "Consider adding...", "Try including...", "One thing that could help..."
 - Never say "you should" or "you must" — always suggest, never command.
@@ -76,7 +83,8 @@ Return ONLY valid JSON matching this exact shape — no extra keys, no markdown:
   "result":    { "score": 1-5, "feedback": "string (≤80 words)", "strengths": ["string", "string"] },
   "overall":   { "score": 1-5, "feedback": "string (≤60 words, encouraging summary)", "strengths": ["string", "string", "string"], "revisedAnswer": "string (5-7 sentences, rewritten STAR answer in first person, warm and natural-sounding)" }
 }`,
-      `INTERVIEW QUESTION: "${question}"\n\nCANDIDATE'S ANSWER: "${answer}"`
+      `INTERVIEW QUESTION: "${question}"\n\nCANDIDATE'S ANSWER: "${answer}"`,
+      { model: FEEDBACK_MODEL, temperature: 0.3 }
     );
     res.json(result);
   } catch (err) {
@@ -87,13 +95,18 @@ Return ONLY valid JSON matching this exact shape — no extra keys, no markdown:
 
 // POST /api/improvement-suggestion
 app.post('/api/improvement-suggestion', async (req, res) => {
-  const { question, answer, componentToImprove } = req.body;
+  const { question, answer, componentToImprove, language } = req.body;
   if (!question || !answer || !componentToImprove)
     return res.status(400).json({ error: 'question, answer, and componentToImprove are required' });
+
+  const langInstruction = language === 'vi'
+    ? 'Write the suggestion in Vietnamese.'
+    : 'Write the suggestion in English.';
 
   try {
     const result = await chat(
       `You are a warm interview coach helping a neurodivergent job seeker improve one specific part of their STAR answer.
+${langInstruction}
 
 Write a 1–2 sentence example that improves only the "${componentToImprove}" part.
 - Stay closely tied to the context of their original answer (same job/situation).
@@ -102,7 +115,8 @@ Write a 1–2 sentence example that improves only the "${componentToImprove}" pa
 - Do NOT rewrite the entire answer — only the ${componentToImprove} part.
 
 Return ONLY valid JSON: { "suggestion": "string" }`,
-      `Interview question: "${question}"\nCandidate's answer: "${answer}"\nImprove only the ${componentToImprove} section.`
+      `Interview question: "${question}"\nCandidate's answer: "${answer}"\nImprove only the ${componentToImprove} section.`,
+      { model: FEEDBACK_MODEL, temperature: 0.5 }
     );
     res.json(result);
   } catch (err) {
@@ -192,7 +206,7 @@ Return ONLY valid JSON: { "feedback": "string" }`,
 });
 
 const server = app.listen(PORT, () => {
-  console.log(`API server running on http://localhost:${PORT} (model: ${MODEL})`);
+  console.log(`API server running on http://localhost:${PORT} (feedback: ${FEEDBACK_MODEL}, utility: ${UTILITY_MODEL})`);
 });
 
 server.on('error', (err) => {

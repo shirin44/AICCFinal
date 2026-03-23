@@ -33,10 +33,11 @@ async function post<T>(path: string, body: unknown, signal?: AbortSignal): Promi
 export const getInterviewFeedback = async (
   question: string,
   answer: string,
+  language?: string,
   signal?: AbortSignal
 ): Promise<StarFeedback> => {
   try {
-    return await post<StarFeedback>('/api/interview-feedback', { question, answer }, signal);
+    return await post<StarFeedback>('/api/interview-feedback', { question, answer, language }, signal);
   } catch (error: any) {
     console.error('Error getting interview feedback:', error.message);
     throw new Error(error.message || 'Failed to get feedback from AI. Please try again.');
@@ -47,6 +48,7 @@ export const getImprovementSuggestion = async (
   question: string,
   answer: string,
   componentToImprove: 'Situation' | 'Task' | 'Action' | 'Result',
+  language?: string,
   signal?: AbortSignal
 ): Promise<{ suggestion: string }> => {
   try {
@@ -54,6 +56,7 @@ export const getImprovementSuggestion = async (
       question,
       answer,
       componentToImprove,
+      language,
     }, signal);
   } catch (error: any) {
     console.error(`Error getting improvement suggestion for ${componentToImprove}:`, error.message);
