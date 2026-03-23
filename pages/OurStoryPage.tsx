@@ -42,7 +42,7 @@ const videoUrl = (file?: string) => (file && VIDEOS[file]) || "";
    (ensure these match real files in src/assets/* with CORRECT case)
 ----------------------------------------------------------- */
 const MEDIA_IMAGE_MAP: Record<string, string | undefined> = {
-  TEAM_PHOTO: "us.png",     // ✅ exists per your repo
+  TEAM_PHOTO: "ADC1.png",     // ✅ exists per your repo
   BRAINSTORM: "team_photo.jpg",     // fallback if you don’t have a separate brainstorm photo
   TEAM_CALL: "team_photo.jpg",      // adjust if you add team_call.jpg later
   BOOTCAMP: "bootcamp.jpg",         // adjust if you store a bootcamp still
