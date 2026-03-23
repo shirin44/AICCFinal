@@ -196,12 +196,12 @@ const OurStoryPage: React.FC = () => {
       </section>
 
       {/* ══ MARQUEE TICKER ════════════════════════════════════ */}
-      <div className="mb-10 overflow-hidden rounded-2xl border border-border bg-card py-3 shadow-sm">
-        <div className="marquee-track flex gap-8 whitespace-nowrap">
+      <div className="mb-10 overflow-hidden rounded-2xl border border-border bg-card py-3 shadow-sm marquee-fade">
+        <div className="marquee-track flex gap-10 whitespace-nowrap">
           {[...marqueeItems, ...marqueeItems].map((item, i) => (
-            <span key={i} className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-700 shrink-0">
+            <span key={i} className="inline-flex items-center gap-3 text-xs font-semibold text-muted-foreground shrink-0 uppercase tracking-wide">
               {item}
-              <span className="text-border mx-1">·</span>
+              <span className="h-1 w-1 rounded-full bg-border inline-block" />
             </span>
           ))}
         </div>
@@ -209,55 +209,53 @@ const OurStoryPage: React.FC = () => {
 
    
 
-      {/* ══ 02 THE JOURNEY ════════════════════════════════════ */}
+      {/* ══ THE JOURNEY ══════════════════════════════════════ */}
       <section className="mb-12">
-        <div className="flex items-center gap-3 mb-6">
-          <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary uppercase tracking-widest">02</span>
-          <h2 className="font-display text-3xl font-bold text-slate-900">{UI.diary[lang]}</h2>
-        </div>
+        <h2 className="font-display text-2xl font-bold text-slate-900 mb-8 pb-3 border-b border-border">
+          {UI.diary[lang]}
+        </h2>
 
-        <div className="space-y-8">
+        <div className="space-y-6">
           {OUR_STORY_CONTENT.entries.map((e, idx) => {
             const isAward = e.id === "adc-result" || e.id === "spark-hub";
             return (
               <article
                 key={idx}
-                className={`grid items-start gap-6 md:grid-cols-2 ${
+                className={`grid items-start gap-5 md:grid-cols-2 ${
                   idx % 2 === 1 ? "md:[&>*:first-child]:order-2" : ""
                 }`}
               >
-                <div className={`rounded-2xl border p-6 shadow-sm ${
+                <div className={`rounded-2xl border p-5 shadow-sm ${
                   isAward
-                    ? "border-primary/30 bg-gradient-to-br from-blue-50 to-violet-50"
-                    : "border-border bg-card"
+                    ? "border-primary/25 bg-gradient-to-br from-primary/5 to-accent/5"
+                    : "border-border bg-white"
                 }`}>
                   <div className="flex flex-wrap items-center gap-2 mb-2">
-                    <span className="text-sm font-bold text-primary">{e.date[lang]}</span>
+                    <span className="text-xs font-bold text-primary uppercase tracking-wide">{e.date[lang]}</span>
                     {e.category?.[lang] && (
-                      <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${getCatClass(e.category[Language.EN])}`}>
+                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${getCatClass(e.category[Language.EN])}`}>
                         {e.category[lang]}
                       </span>
                     )}
                   </div>
                   {e.title?.[lang] && (
-                    <h3 className="font-display text-xl font-bold text-foreground mb-3">{e.title[lang]}</h3>
+                    <h3 className="font-display text-lg font-bold text-foreground mb-2 leading-snug">{e.title[lang]}</h3>
                   )}
-                  <p className="whitespace-pre-line text-slate-800 leading-relaxed text-sm">{e.body[lang]}</p>
+                  <p className="whitespace-pre-line text-slate-700 leading-relaxed text-sm">{e.body[lang]}</p>
 
-                  {/* Sandy quote — injected after the Sandy Workshop entry */}
                   {e.id === "0820" && (
-                    <blockquote className="mt-4 rounded-xl bg-amber-50 border border-amber-200 p-4">
-                      <p className="text-sm italic text-slate-700 leading-relaxed">
+                    <blockquote className="mt-4 border-l-4 border-amber-300 pl-4">
+                      <p className="text-sm italic text-slate-600 leading-relaxed">
                         &ldquo;{OUR_STORY_CONTENT.sandyQuote[lang]}&rdquo;
                       </p>
-                      <footer className="mt-2 text-xs font-semibold text-amber-700">
+                      <footer className="mt-1.5 text-xs font-semibold text-amber-700">
                         — {OUR_STORY_CONTENT.sandyQuoteAttr[lang]}
                       </footer>
                     </blockquote>
                   )}
                 </div>
 
-                <div className="rounded-2xl border border-border bg-white p-4 shadow-md">
+                <div className="rounded-2xl border border-border bg-white p-3 shadow-sm">
                   <MediaBlock
                     placeholderKey={e.placeholderKey}
                     alt={e.title?.[lang] || e.date[lang]}
@@ -272,38 +270,37 @@ const OurStoryPage: React.FC = () => {
         </div>
       </section>
 
-      {/* ══ STATS BANNER ══════════════════════════════════════ */}
-      <section className="mb-12 rounded-3xl border border-border bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 p-8 shadow-sm">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+      {/* ══ STATS ═════════════════════════════════════════════ */}
+      <section className="mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-border rounded-2xl border border-border bg-white shadow-sm overflow-hidden">
           {OUR_STORY_CONTENT.stats.map((s, i) => (
-            <div key={i} className="flex flex-col items-center gap-1">
-              <span className="font-display text-4xl font-extrabold text-primary">{s.value}</span>
-              <span className="text-sm text-muted-foreground leading-snug max-w-[12ch]">{s.label[lang]}</span>
+            <div key={i} className="flex flex-col items-center gap-1 px-6 py-6 text-center">
+              <span className="font-display text-3xl font-extrabold text-primary">{s.value}</span>
+              <span className="text-xs text-muted-foreground leading-snug mt-0.5">{s.label[lang]}</span>
             </div>
           ))}
         </div>
       </section>
 
-      {/* ══ 03 RECOGNITION ════════════════════════════════════ */}
+      {/* ══ RECOGNITION ══════════════════════════════════════ */}
       <section className="mb-12">
-        <div className="flex items-center gap-3 mb-6">
-          <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary uppercase tracking-widest">03</span>
-          <h2 className="font-display text-3xl font-bold text-slate-900">{UI.recognition[lang]}</h2>
-        </div>
+        <h2 className="font-display text-2xl font-bold text-slate-900 mb-8 pb-3 border-b border-border">
+          {UI.recognition[lang]}
+        </h2>
         <div className="grid gap-4 sm:grid-cols-3">
           {OUR_STORY_CONTENT.achievements.map((a, i) => (
-            <div key={i} className={`rounded-2xl border bg-gradient-to-br ${a.color} p-6 shadow-sm flex flex-col gap-2`}>
+            <div key={i} className="rounded-2xl border border-border bg-white p-5 shadow-sm flex flex-col gap-2">
               <div className="mb-1">{ACHIEVEMENT_ICONS[a.icon]}</div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{a.label[lang]}</p>
-              <h3 className="font-display text-xl font-bold text-slate-900 leading-tight">{a.title[lang]}</h3>
-              <p className="text-sm text-slate-700 leading-relaxed">{a.body[lang]}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{a.label[lang]}</p>
+              <h3 className="font-display text-lg font-bold text-foreground leading-snug">{a.title[lang]}</h3>
+              <p className="text-sm text-slate-600 leading-relaxed">{a.body[lang]}</p>
             </div>
           ))}
         </div>
 
         {/* RMIT article CTA */}
-        <div className="mt-4 rounded-2xl border border-violet-200 bg-violet-50/60 p-5 flex flex-col sm:flex-row sm:items-center gap-3">
-          <p className="text-sm text-slate-700 flex-1">
+        <div className="mt-4 rounded-2xl border border-border bg-card p-5 flex flex-col sm:flex-row sm:items-center gap-3">
+          <p className="text-sm text-slate-600 flex-1">
             {lang === Language.VN
               ? "RMIT Việt Nam đã chia sẻ câu chuyện của chúng tôi — về tác động xã hội, thiết kế tiếp cận và sứ mệnh phía sau NeuroAICC."
               : "RMIT Vietnam covered our story — the social impact, the accessibility focus, and the mission behind NeuroAICC."}
@@ -312,9 +309,9 @@ const OurStoryPage: React.FC = () => {
             href={OUR_STORY_CONTENT.rmitArticleUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow hover:opacity-90 transition-opacity"
+            className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity"
           >
-            <ExternalLink className="h-4 w-4" />
+            <ExternalLink className="h-3.5 w-3.5" />
             {lang === Language.VN ? "Đọc bài viết" : "Read article"}
           </a>
         </div>
@@ -322,22 +319,24 @@ const OurStoryPage: React.FC = () => {
 
       {/* ══ WHY THIS MATTERS ══════════════════════════════════ */}
       <section className="mb-12">
-        <div className="rounded-3xl border border-border bg-gradient-to-br from-indigo-50 via-violet-50 to-pink-50 p-8 shadow-sm">
-          <h2 className="font-display text-3xl font-bold text-slate-900 mb-4">{UI.impact[lang]}</h2>
-          <p className="whitespace-pre-line text-slate-800 leading-relaxed max-w-3xl">
-            {OUR_STORY_CONTENT.impact[lang]}
-          </p>
-        </div>
+        <h2 className="font-display text-2xl font-bold text-slate-900 mb-8 pb-3 border-b border-border">
+          {UI.impact[lang]}
+        </h2>
+        <p className="whitespace-pre-line text-slate-700 leading-relaxed max-w-2xl">
+          {OUR_STORY_CONTENT.impact[lang]}
+        </p>
       </section>
 
       {/* ══ WHAT WE LEARNED ═══════════════════════════════════ */}
       <section className="mb-12">
-        <h2 className="font-display text-3xl font-bold text-slate-900 mb-6">{UI.lessons[lang]}</h2>
-        <div className="rounded-3xl border border-border bg-card p-8 shadow-sm space-y-4">
+        <h2 className="font-display text-2xl font-bold text-slate-900 mb-8 pb-3 border-b border-border">
+          {UI.lessons[lang]}
+        </h2>
+        <div className="space-y-4 border-l-2 border-primary/20 pl-5">
           {OUR_STORY_CONTENT.lessons[lang].map((lesson, i) => (
-            <div key={i} className="flex items-start gap-4">
-              <ChevronRight className="mt-0.5 shrink-0 h-4 w-4 text-primary" />
-              <p className="text-slate-800 leading-relaxed">{lesson}</p>
+            <div key={i} className="flex items-start gap-3">
+              <ChevronRight className="mt-0.5 shrink-0 h-4 w-4 text-primary/60" />
+              <p className="text-slate-700 leading-relaxed">{lesson}</p>
             </div>
           ))}
         </div>
@@ -345,31 +344,33 @@ const OurStoryPage: React.FC = () => {
 
       {/* ══ REFLECTIONS ═══════════════════════════════════════ */}
       <section className="mb-12">
-        <div className="grid gap-6 md:grid-cols-[1fr,400px]">
-          <div className="rounded-3xl border border-border bg-gradient-to-br from-amber-50 to-rose-50 p-8 shadow-sm">
-            <h2 className="font-display text-3xl font-bold text-slate-900">{UI.reflections[lang]}</h2>
-            <p className="mt-4 whitespace-pre-line text-slate-800 leading-relaxed">
+        <div className="grid gap-5 md:grid-cols-[1fr,380px]">
+          <div className="rounded-2xl border border-border bg-white p-7 shadow-sm">
+            <h2 className="font-display text-2xl font-bold text-slate-900 mb-4">{UI.reflections[lang]}</h2>
+            <p className="whitespace-pre-line text-slate-700 leading-relaxed text-sm">
               {OUR_STORY_CONTENT.reflections[lang]}
             </p>
           </div>
-          <div className="rounded-3xl border border-border bg-white p-4 shadow-md">
+          <div className="rounded-2xl border border-border bg-white p-3 shadow-sm">
             <MediaBlock placeholderKey="REFLECTION" alt="Reflection" placeholderLabel={P.REFLECTION[lang]} />
           </div>
         </div>
       </section>
 
       {/* ══ WITH GRATITUDE ════════════════════════════════════ */}
-      <section className="mb-12 rounded-3xl border border-border bg-card p-8 shadow-sm">
-        <h2 className="font-display text-3xl font-bold text-slate-900 mb-6">{UI.appreciation[lang]}</h2>
-        <div className="grid gap-4 sm:grid-cols-2">
+      <section className="mb-12">
+        <h2 className="font-display text-2xl font-bold text-slate-900 mb-8 pb-3 border-b border-border">
+          {UI.appreciation[lang]}
+        </h2>
+        <div className="grid gap-3 sm:grid-cols-2">
           {OUR_STORY_CONTENT.appreciation[lang].map((line, i) => {
             const [nameRole, ...rest] = line.split(" — ");
             return (
-              <div key={i} className="flex items-start gap-3 rounded-2xl border border-border bg-white p-4 shadow-sm">
-                <span className="mt-1 shrink-0 h-2 w-2 rounded-full bg-primary" />
+              <div key={i} className="flex items-start gap-3 rounded-xl border border-border bg-white p-4 shadow-sm">
+                <span className="mt-1.5 shrink-0 h-1.5 w-1.5 rounded-full bg-primary/60" />
                 <div>
-                  <p className="text-sm font-bold text-foreground">{nameRole}</p>
-                  <p className="text-sm text-slate-600 leading-relaxed mt-0.5">{rest.join(" — ")}</p>
+                  <p className="text-sm font-semibold text-foreground">{nameRole}</p>
+                  <p className="text-xs text-slate-500 leading-relaxed mt-0.5">{rest.join(" — ")}</p>
                 </div>
               </div>
             );
@@ -379,7 +380,7 @@ const OurStoryPage: React.FC = () => {
 
       {/* ══ MEDIA GALLERY ═════════════════════════════════════ */}
       <section className="mb-4">
-        <h2 className="font-display text-3xl font-bold text-slate-900 mb-4">{UI.media[lang]}</h2>
+        <h2 className="font-display text-2xl font-bold text-slate-900 mb-6 pb-3 border-b border-border">{UI.media[lang]}</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {(OUR_STORY_CONTENT.galleryItems as any[]).map((item: any, i: number) => (
             <div key={i} className="rounded-2xl border border-border bg-white p-4 shadow-sm">
@@ -406,9 +407,14 @@ const OurStoryPage: React.FC = () => {
           0% { background-position: 0 0, 0 0, 0 0; }
           100% { background-position: 180px 180px, -220px 220px, 200px -200px; }
         }
+        .marquee-fade {
+          -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+          mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+        }
         .marquee-track {
-          animation: marquee 35s linear infinite;
+          animation: marquee 40s linear infinite;
           display: inline-flex;
+          padding: 0 2rem;
         }
         @keyframes marquee {
           0% { transform: translateX(0); }
