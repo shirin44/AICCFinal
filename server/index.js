@@ -15,7 +15,19 @@ const TIMEOUT_MS = 30_000;
 
 const openai = new OpenAI({ apiKey: process.env.API_KEY, timeout: TIMEOUT_MS });
 
-app.use(cors({ origin: process.env.ALLOWED_ORIGIN || 'http://localhost:5173' }));
+const allowedOrigins = (process.env.ALLOWED_ORIGIN || 'http://localhost:5173')
+  .split(',').map(o => o.trim()).filter(Boolean);
+
+app.get('/health', (_req, res) => res.json({ ok: true }));
+
+app.use(cors({
+  origin: (origin, cb) => {
+    // Allow requests with no origin (curl, Postman, server-to-server)
+    if (!origin) return cb(null, true);
+    if (allowedOrigins.includes(origin)) return cb(null, true);
+    cb(new Error(`CORS: ${origin} not allowed`));
+  },
+}));
 app.use(express.json());
 
 async function chat(systemPrompt, userContent) {

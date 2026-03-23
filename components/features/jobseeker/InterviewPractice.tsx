@@ -12,6 +12,7 @@ import {
   addHistoryEntry,
   type PracticeType as HistoryPracticeType,
 } from "@/utils/History";
+import { addWellnessEntry } from "@/utils/wellness";
 import StarRating from "@/components/StarRating";
 import FeedbackDisplay from "@/components/FeedbackDisplay";
 import SavedQuestionsList from "@/components/SavedQuestionsList";
@@ -90,6 +91,8 @@ const InterviewPractice: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [isCalmMode, setIsCalmMode] = useState(false);
+  const [wellnessConfidence, setWellnessConfidence] = useState(3);
+  const [wellnessAnxiety, setWellnessAnxiety] = useState(3);
 
   const [saved, setSaved] = useState<SavedQuestion[]>([]);
 
@@ -140,6 +143,7 @@ const InterviewPractice: React.FC = () => {
   }, [isLoading, setNarratorState]);
 
   const startPractice = (type: PracticeType) => {
+    addWellnessEntry(wellnessConfidence, wellnessAnxiety);
     setPracticeType(type);
     setQuestions(questionSets[type]);
     setCurrentQuestionIndex(0);
@@ -357,6 +361,42 @@ const InterviewPractice: React.FC = () => {
               {t("calmModeDescription")}
             </p>
           </div>
+        </div>
+
+        {/* Wellness check-in */}
+        <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-sm space-y-4">
+          <p className="font-semibold text-slate-900 text-sm">
+            {language === "en" ? "Quick check-in before you start:" : "Kiểm tra nhanh trước khi bắt đầu:"}
+          </p>
+          {[
+            { label: language === "en" ? "How confident are you feeling?" : "Bạn cảm thấy tự tin như thế nào?", value: wellnessConfidence, set: setWellnessConfidence, low: language === "en" ? "Not confident" : "Không tự tin", high: language === "en" ? "Very confident" : "Rất tự tin" },
+            { label: language === "en" ? "How anxious are you feeling?" : "Bạn cảm thấy lo lắng như thế nào?", value: wellnessAnxiety, set: setWellnessAnxiety, low: language === "en" ? "Very calm" : "Rất bình tĩnh", high: language === "en" ? "Very anxious" : "Rất lo lắng" },
+          ].map(({ label, value, set, low, high }) => (
+            <div key={label}>
+              <p className="text-sm text-slate-700 mb-1">{label}</p>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-slate-500 w-20">{low}</span>
+                <div className="flex gap-1 flex-1 justify-center">
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <button
+                      key={n}
+                      onClick={() => set(n)}
+                      className={`w-9 h-9 rounded-full text-sm font-bold border-2 transition-colors
+                        ${value === n
+                          ? "bg-blue-600 text-white border-blue-600"
+                          : "bg-white text-slate-700 border-slate-300 hover:border-blue-400"
+                        }`}
+                      aria-label={`${n} out of 5`}
+                      aria-pressed={value === n}
+                    >
+                      {n}
+                    </button>
+                  ))}
+                </div>
+                <span className="text-xs text-slate-500 w-20 text-right">{high}</span>
+              </div>
+            </div>
+          ))}
         </div>
 
         <SavedQuestionsList

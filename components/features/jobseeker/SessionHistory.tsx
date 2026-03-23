@@ -1,5 +1,5 @@
 // src/components/jobseeker/history/SessionHistory.tsx
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState, useCallback } from "react";
 import StarMethodIcon from "../../icons/StarMethodIcon";
 import { AppContext } from "../../../App";
 import { DIALOGUE } from "@/constants";
@@ -15,6 +15,8 @@ import {
   JOBSEEKER_HISTORY_CONTENT,
   JOBSEEKER_BADGE_LABELS,
 } from "@/constants/jobseeker/jobseeker";
+import { loadOutcomes, addOutcome, OUTCOME_META, type OutcomeType } from "@/utils/outcomes";
+import { loadWellness, type WellnessEntry } from "@/utils/wellness";
 
 /* ----------------------------- XP / Streak Logic ----------------------------- */
 
@@ -209,6 +211,9 @@ const SessionHistory: React.FC = () => {
   const { language, setNarratorDialogue, setNarratorState } =
     useContext(AppContext);
   const [items, setItems] = useState<HistoryItem[]>(() => loadHistory());
+  const [outcomes, setOutcomes] = useState(() => loadOutcomes());
+  const [wellness, setWellness] = useState<WellnessEntry[]>(() => loadWellness());
+  const [outcomeFlash, setOutcomeFlash] = useState<OutcomeType | null>(null);
 
   const langKey = language === "en" ? Language.EN : Language.VN;
 
@@ -236,6 +241,22 @@ const SessionHistory: React.FC = () => {
       setItems([]);
     }
   };
+
+  const handleOutcome = useCallback((type: OutcomeType) => {
+    addOutcome(type);
+    setOutcomes(loadOutcomes());
+    setOutcomeFlash(type);
+    setTimeout(() => setOutcomeFlash(null), 2000);
+  }, []);
+
+  // Wellness trend — last 10 entries, avg confidence and anxiety
+  const wellnessTrend = useMemo(() => {
+    const recent = wellness.slice(0, 10).reverse();
+    if (recent.length === 0) return null;
+    const avgConf = Math.round(recent.reduce((s, e) => s + e.confidence, 0) / recent.length * 10) / 10;
+    const avgAnx = Math.round(recent.reduce((s, e) => s + e.anxiety, 0) / recent.length * 10) / 10;
+    return { recent, avgConf, avgAnx };
+  }, [wellness]);
 
   const levelProgressPct =
     stats.nextLevelXp === stats.xp
@@ -447,6 +468,89 @@ const SessionHistory: React.FC = () => {
           100% { transform: scale(0.98) rotate(0deg); }
         }
       `}</style>
+
+      {/* ── Job-search outcomes ── */}
+      <section aria-labelledby="outcomes-heading" className="space-y-4">
+        <h3 id="outcomes-heading" className="font-display text-xl font-bold text-slate-900">
+          {language === "en" ? "🗺️ My Job-Search Journey" : "🗺️ Hành Trình Tìm Việc"}
+        </h3>
+        <p className="text-sm text-slate-600">
+          {language === "en"
+            ? "Tap a milestone when it happens to track your progress."
+            : "Nhấn vào cột mốc khi nó xảy ra để theo dõi tiến trình."}
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {(Object.keys(OUTCOME_META) as OutcomeType[]).map((type) => {
+            const meta = OUTCOME_META[type];
+            const count = outcomes.filter(o => o.type === type).length;
+            const isFlash = outcomeFlash === type;
+            return (
+              <button
+                key={type}
+                onClick={() => handleOutcome(type)}
+                className={`flex flex-col items-center gap-1 p-4 rounded-xl border-2 font-medium text-sm transition-all
+                  ${isFlash ? "scale-105 shadow-lg" : "hover:scale-102"}
+                  ${meta.color}`}
+                aria-label={`Log: ${meta.labelEn} (${count} logged)`}
+              >
+                <span className="text-2xl" aria-hidden>{meta.emoji}</span>
+                <span className="text-center leading-snug">
+                  {language === "en" ? meta.labelEn : meta.labelVn}
+                </span>
+                <span className="text-lg font-bold">{count}</span>
+                {isFlash && (
+                  <span className="text-xs font-semibold animate-fadeInUp">
+                    {language === "en" ? "Logged! ✓" : "Đã ghi! ✓"}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ── Wellness trend ── */}
+      {wellnessTrend && (
+        <section aria-labelledby="wellness-heading" className="space-y-3">
+          <h3 id="wellness-heading" className="font-display text-xl font-bold text-slate-900">
+            {language === "en" ? "💙 How You've Been Feeling" : "💙 Cảm Xúc Của Bạn"}
+          </h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="p-4 rounded-xl bg-blue-50 border border-blue-200">
+              <p className="text-sm font-semibold text-blue-700">
+                {language === "en" ? "Avg. Confidence" : "Tự tin TB"}
+              </p>
+              <div className="flex items-end gap-2 mt-1">
+                <span className="text-3xl font-bold text-blue-900">{wellnessTrend.avgConf}</span>
+                <span className="text-sm text-blue-600 mb-1">/5</span>
+              </div>
+            </div>
+            <div className="p-4 rounded-xl bg-amber-50 border border-amber-200">
+              <p className="text-sm font-semibold text-amber-700">
+                {language === "en" ? "Avg. Anxiety" : "Lo lắng TB"}
+              </p>
+              <div className="flex items-end gap-2 mt-1">
+                <span className="text-3xl font-bold text-amber-900">{wellnessTrend.avgAnx}</span>
+                <span className="text-sm text-amber-600 mb-1">/5</span>
+              </div>
+            </div>
+          </div>
+          {wellnessTrend.recent.length >= 2 && (() => {
+            const first = wellnessTrend.recent[0];
+            const last = wellnessTrend.recent[wellnessTrend.recent.length - 1];
+            const confDiff = last.confidence - first.confidence;
+            const anxDiff = last.anxiety - first.anxiety;
+            if (confDiff === 0 && anxDiff === 0) return null;
+            return (
+              <p className="text-sm text-slate-600">
+                {confDiff > 0 && (language === "en" ? `📈 Confidence up ${confDiff} point${confDiff > 1 ? "s" : ""} since you started.` : `📈 Tự tin tăng ${confDiff} điểm.`)}
+                {confDiff < 0 && (language === "en" ? `Your confidence has dipped — that's okay, keep going.` : `Tự tin có giảm — không sao, hãy tiếp tục!`)}
+                {anxDiff < 0 && ` ${language === "en" ? `😌 Anxiety down ${Math.abs(anxDiff)} point${Math.abs(anxDiff) > 1 ? "s" : ""} — great progress!` : `😌 Lo lắng giảm ${Math.abs(anxDiff)} điểm!`}`}
+              </p>
+            );
+          })()}
+        </section>
+      )}
     </div>
   );
 };
