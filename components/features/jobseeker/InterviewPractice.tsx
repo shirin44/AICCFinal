@@ -1,5 +1,8 @@
 // src/components/jobseeker/interview/InterviewPractice.tsx
 import React, { useState, useContext, useEffect } from "react";
+import { Drawer } from "vaul";
+import Lottie from "lottie-react";
+import thinkingAnim from "@/constants/lottie/thinking.json";
 
 import { AppContext } from "@/App";
 import { DIALOGUE } from "@/constants";
@@ -95,6 +98,8 @@ const InterviewPractice: React.FC = () => {
   const [wellnessAnxiety, setWellnessAnxiety] = useState(3);
 
   const [saved, setSaved] = useState<SavedQuestion[]>([]);
+  const [starDrawerOpen, setStarDrawerOpen] = useState(false);
+  const [savedDrawerOpen, setSavedDrawerOpen] = useState(false);
 
   // language helper
   const langKey = language === "en" ? Language.EN : Language.VN;
@@ -400,14 +405,61 @@ const InterviewPractice: React.FC = () => {
           ))}
         </div>
 
-        <SavedQuestionsList
-          saved={saved}
-          onPractice={startFromSaved}
-          onRemove={(q) => {
-            removeSavedQuestion(q);
-            setSaved(loadSavedQuestions());
-          }}
-        />
+        {/* Saved questions drawer trigger */}
+        {saved.length > 0 && (
+          <Drawer.Root open={savedDrawerOpen} onOpenChange={setSavedDrawerOpen}>
+            <Drawer.Trigger asChild>
+              <button
+                type="button"
+                className="w-full text-left p-4 bg-white border border-slate-200 rounded-xl shadow-sm hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 flex items-center justify-between gap-3"
+              >
+                <div>
+                  <p className="font-semibold text-slate-900">
+                    {language === "en"
+                      ? `Saved questions (${saved.length})`
+                      : `Câu hỏi đã lưu (${saved.length})`}
+                  </p>
+                  <p className="text-sm text-slate-600 mt-0.5">
+                    {language === "en"
+                      ? "View and practice your bookmarked questions"
+                      : "Xem và luyện tập các câu hỏi đã đánh dấu"}
+                  </p>
+                </div>
+                <BookmarkIcon filled className="w-5 h-5 text-amber-500 flex-shrink-0" />
+              </button>
+            </Drawer.Trigger>
+            <Drawer.Portal>
+              <Drawer.Overlay style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.35)", zIndex: 49 }} />
+              <Drawer.Content
+                style={{
+                  background: "white",
+                  borderRadius: "16px 16px 0 0",
+                  position: "fixed",
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  maxHeight: "80dvh",
+                  overflowY: "auto",
+                  padding: "24px 20px 40px",
+                  zIndex: 50,
+                  boxShadow: "0 -4px 24px rgba(0,0,0,0.10)",
+                }}
+                aria-describedby={undefined}
+              >
+                {/* Drag handle */}
+                <div style={{ width: 40, height: 4, background: "#e2e8f0", borderRadius: 9999, margin: "0 auto 20px" }} />
+                <Drawer.Title className="font-display text-2xl font-bold text-slate-900 mb-4">
+                  {language === "en" ? "Saved Questions" : "Câu hỏi đã lưu"}
+                </Drawer.Title>
+                <SavedQuestionsList
+                  saved={saved}
+                  onPractice={(q) => { setSavedDrawerOpen(false); startFromSaved(q); }}
+                  onRemove={(q) => { removeSavedQuestion(q); setSaved(loadSavedQuestions()); }}
+                />
+              </Drawer.Content>
+            </Drawer.Portal>
+          </Drawer.Root>
+        )}
       </div>
     );
   }
@@ -545,15 +597,18 @@ const InterviewPractice: React.FC = () => {
         </div>
       </section>
 
-      {/* Loading overlay */}
+      {/* Loading state — gentle pulsing dots */}
       {isLoading && (
-        <div className="flex items-center gap-3 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
-          <svg className="animate-spin h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" aria-hidden>
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-          </svg>
+        <div className="flex items-center gap-3 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-800">
+          <Lottie
+            animationData={thinkingAnim}
+            loop
+            autoplay
+            style={{ width: 48, height: 16, flexShrink: 0 }}
+            aria-hidden
+          />
           <span className="font-medium">
-            {language === "en" ? "Analyzing your answer…" : "Đang phân tích câu trả lời của bạn…"}
+            {language === "en" ? "Reviewing your answer — this takes a few seconds" : "Đang xem xét câu trả lời của bạn — mất vài giây"}
           </span>
         </div>
       )}
@@ -575,15 +630,94 @@ const InterviewPractice: React.FC = () => {
 
       {/* Summary / feedback */}
       {flowStep === "summary" && feedback && (
-        <section className="mt-4">
-          <h3 className="font-display text-2xl font-bold mb-4 text-slate-900">
+        <section className="mt-4 space-y-4">
+          <h3 className="font-display text-2xl font-bold text-slate-900">
             {t("summaryTitle")}
           </h3>
-          <FeedbackDisplay
-            feedback={feedback}
-            suggestions={suggestions}
-            isFetchingSuggestions={isFetchingSuggestions}
-          />
+
+          {/* Inline overall card — score + summary + strengths */}
+          <div className="rounded-xl overflow-hidden border border-slate-200 bg-white shadow-sm">
+            <div className="p-4 bg-slate-900 text-white flex items-center justify-between">
+              <h4 className="font-display font-bold text-xl">Overall</h4>
+              <StarRating score={feedback.overall.score} size="w-6 h-6" />
+            </div>
+            <div className="p-5 space-y-3">
+              <p className="text-slate-900 leading-relaxed">{feedback.overall.feedback}</p>
+              {feedback.overall.strengths?.length ? (
+                <div>
+                  <p className="font-semibold text-sm text-emerald-700 mb-1">
+                    {language === "en" ? "What you did well:" : "Điều bạn đã làm tốt:"}
+                  </p>
+                  <ul className="space-y-1">
+                    {feedback.overall.strengths.map((s, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-slate-800">
+                        <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-emerald-500" aria-hidden />
+                        {s}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+            </div>
+          </div>
+
+          {/* STAR breakdown drawer */}
+          <Drawer.Root open={starDrawerOpen} onOpenChange={setStarDrawerOpen}>
+            <Drawer.Trigger asChild>
+              <button
+                type="button"
+                className="w-full py-3 px-5 rounded-xl border border-slate-200 bg-white shadow-sm hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 text-left flex items-center justify-between gap-3"
+              >
+                <div>
+                  <p className="font-semibold text-slate-900">
+                    {language === "en" ? "Review STAR breakdown and improvement tips" : "Xem phân tích STAR và gợi ý cải thiện"}
+                  </p>
+                  <p className="text-sm text-slate-600 mt-0.5">
+                    {language === "en"
+                      ? "See scores and feedback for each part of your answer"
+                      : "Xem điểm và phản hồi cho từng phần câu trả lời của bạn"}
+                  </p>
+                </div>
+                <span className="text-slate-400 text-lg" aria-hidden>→</span>
+              </button>
+            </Drawer.Trigger>
+            <Drawer.Portal>
+              <Drawer.Overlay style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.35)", zIndex: 49 }} />
+              <Drawer.Content
+                style={{
+                  background: "white",
+                  borderRadius: "16px 16px 0 0",
+                  position: "fixed",
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  maxHeight: "90dvh",
+                  overflowY: "auto",
+                  padding: "24px 20px 40px",
+                  zIndex: 50,
+                  boxShadow: "0 -4px 24px rgba(0,0,0,0.10)",
+                }}
+                aria-describedby={undefined}
+              >
+                {/* Drag handle */}
+                <div style={{ width: 40, height: 4, background: "#e2e8f0", borderRadius: 9999, margin: "0 auto 20px" }} />
+                <Drawer.Title className="font-display text-2xl font-bold text-slate-900 mb-2">
+                  {language === "en" ? "STAR Breakdown" : "Phân tích STAR"}
+                </Drawer.Title>
+                <p className="text-sm text-slate-600 mb-4">
+                  {language === "en"
+                    ? "Each section of the STAR method is scored and explained below."
+                    : "Mỗi phần của phương pháp STAR được chấm điểm và giải thích bên dưới."}
+                </p>
+                <FeedbackDisplay
+                  feedback={feedback}
+                  suggestions={suggestions}
+                  isFetchingSuggestions={isFetchingSuggestions}
+                  showOverall={false}
+                />
+              </Drawer.Content>
+            </Drawer.Portal>
+          </Drawer.Root>
         </section>
       )}
 

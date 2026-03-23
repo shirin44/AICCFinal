@@ -22,7 +22,8 @@ const FeedbackDisplay: React.FC<{
   feedback: StarFeedback;
   suggestions: Partial<Record<StarComponent, string>>;
   isFetchingSuggestions: boolean;
-}> = ({ feedback, suggestions, isFetchingSuggestions }) => {
+  showOverall?: boolean;
+}> = ({ feedback, suggestions, isFetchingSuggestions, showOverall = true }) => {
   const [copiedRevised, setCopiedRevised] = useState(false);
 
   const items: {
@@ -52,7 +53,7 @@ const FeedbackDisplay: React.FC<{
   return (
     <div className="mt-6 space-y-6">
       {/* Overall feedback card */}
-      <div className="rounded-xl shadow-lg overflow-hidden border border-slate-300 bg-white">
+      {showOverall && <div className="rounded-xl shadow-lg overflow-hidden border border-slate-300 bg-white">
         <div className="p-4 bg-slate-900 text-white flex items-center justify-between">
           <h3 className="font-display font-bold text-2xl">Overall Feedback</h3>
           <StarRating score={feedback.overall.score} size="w-6 h-6" />
@@ -83,7 +84,7 @@ const FeedbackDisplay: React.FC<{
             </div>
           ) : null}
         </div>
-      </div>
+      </div>}
 
       {/* STAR breakdown grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
