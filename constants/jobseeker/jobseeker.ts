@@ -222,4 +222,104 @@ export const JOBSEEKER_BADGE_LABELS = {
       [Language.VN]: "Quay lại luyện tập sau một thời gian gián đoạn.",
     },
   },
+  twenty: {
+    name: {
+      [Language.EN]: "Unstoppable",
+      [Language.VN]: "Không thể ngăn cản",
+    },
+    description: {
+      [Language.EN]: "Reached 20 total sessions.",
+      [Language.VN]: "Đã hoàn thành 20 buổi luyện tập.",
+    },
+  },
+  streak3: {
+    name: {
+      [Language.EN]: "3-Day Run",
+      [Language.VN]: "Chuỗi 3 ngày",
+    },
+    description: {
+      [Language.EN]: "3 days of practice in a row.",
+      [Language.VN]: "Luyện tập 3 ngày liên tiếp.",
+    },
+  },
+  streak14: {
+    name: {
+      [Language.EN]: "Two-Week Streak",
+      [Language.VN]: "Chuỗi hai tuần",
+    },
+    description: {
+      [Language.EN]: "14 straight days of practice!",
+      [Language.VN]: "14 ngày luyện tập liên tiếp!",
+    },
+  },
+  "avg-four": {
+    name: {
+      [Language.EN]: "Consistent Quality",
+      [Language.VN]: "Chất lượng ổn định",
+    },
+    description: {
+      [Language.EN]: "Average score of 4 or above.",
+      [Language.VN]: "Điểm trung bình đạt 4 trở lên.",
+    },
+  },
+  "high-scorer": {
+    name: {
+      [Language.EN]: "High Scorer",
+      [Language.VN]: "Điểm cao liên tục",
+    },
+    description: {
+      [Language.EN]: "Scored 4+ three separate times.",
+      [Language.VN]: "Đạt điểm từ 4 trở lên ba lần riêng biệt.",
+    },
+  },
+  diverse: {
+    name: {
+      [Language.EN]: "All-Rounder",
+      [Language.VN]: "Toàn diện",
+    },
+    description: {
+      [Language.EN]: "Tried all three practice types.",
+      [Language.VN]: "Đã thử cả ba loại hình luyện tập.",
+    },
+  },
+  "star-master": {
+    name: {
+      [Language.EN]: "STAR Master",
+      [Language.VN]: "Bậc thầy STAR",
+    },
+    description: {
+      [Language.EN]: "Completed 10 STAR Interview sessions.",
+      [Language.VN]: "Hoàn thành 10 buổi luyện tập STAR Interview.",
+    },
+  },
+  "speed-runner": {
+    name: {
+      [Language.EN]: "Speed Runner",
+      [Language.VN]: "Luyện tập dồn dập",
+    },
+    description: {
+      [Language.EN]: "Completed 2 or more sessions in a single day.",
+      [Language.VN]: "Hoàn thành 2 buổi trở lên trong một ngày.",
+    },
+  },
+  consistency: {
+    name: {
+      [Language.EN]: "Show Up",
+      [Language.VN]: "Kiên trì xuất hiện",
+    },
+    description: {
+      [Language.EN]: "Practiced at least 3 times this week.",
+      [Language.VN]: "Luyện tập ít nhất 3 lần trong tuần này.",
+    },
+  },
+  explorer: {
+    name: {
+      [Language.EN]: "Explorer",
+      [Language.VN]: "Khám phá",
+    },
+    description: {
+      [Language.EN]: "Practiced 2 different question types.",
+      [Language.VN]: "Đã luyện tập 2 loại câu hỏi khác nhau.",
+    },
+  },
 } as const;
