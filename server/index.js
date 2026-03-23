@@ -5,19 +5,17 @@ import express from 'express';
 import cors from 'cors';
 import OpenAI from 'openai';
 
-// Load .env from the project root (one level up from server/)
 const __dirname = dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: resolve(__dirname, '../.env') });
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 const MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+const TIMEOUT_MS = 30_000;
 
-const openai = new OpenAI({ apiKey: process.env.API_KEY });
+const openai = new OpenAI({ apiKey: process.env.API_KEY, timeout: TIMEOUT_MS });
 
-app.use(cors({
-  origin: process.env.ALLOWED_ORIGIN || 'http://localhost:5173',
-}));
+app.use(cors({ origin: process.env.ALLOWED_ORIGIN || 'http://localhost:5173' }));
 app.use(express.json());
 
 async function chat(systemPrompt, userContent) {
@@ -39,44 +37,65 @@ app.post('/api/interview-feedback', async (req, res) => {
 
   try {
     const result = await chat(
-      `You are a supportive interview coach. Analyze answers using the STAR method (Situation, Task, Action, Result).
-Tone: specific, kind, plain English. Use gentle suggestions like "Consider..." or "Try...".
-The candidate is a high-functioning autistic person — keep feedback encouraging, concise, and not overwhelming.
+      `You are a warm, supportive interview coach helping neurodivergent job seekers (especially autistic people) build confidence.
 
-Return ONLY valid JSON with this exact shape:
+Analyze the candidate's answer using the STAR method (Situation, Task, Action, Result).
+
+SCORING RUBRIC (use this consistently):
+- 1 = Missing or very unclear — the element is not present
+- 2 = Weak — present but vague or hard to follow
+- 3 = Adequate — present and understandable, but could be stronger
+- 4 = Good — clear, relevant, and mostly complete
+- 5 = Excellent — clear, specific, compelling, and well-structured
+
+TONE RULES:
+- Use plain, simple English. Avoid jargon.
+- Be specific and kind. Lead with what they did well before suggesting improvements.
+- Use gentle phrases: "Consider adding...", "Try including...", "One thing that could help..."
+- Never say "you should" or "you must" — always suggest, never command.
+- Keep each feedback string under 80 words.
+- Keep each strength bullet under 15 words.
+
+Return ONLY valid JSON matching this exact shape — no extra keys, no markdown:
 {
-  "situation": { "score": 1-5, "feedback": "string", "strengths": ["string", "string"] },
-  "task":      { "score": 1-5, "feedback": "string", "strengths": ["string", "string"] },
-  "action":    { "score": 1-5, "feedback": "string", "strengths": ["string", "string"] },
-  "result":    { "score": 1-5, "feedback": "string", "strengths": ["string", "string"] },
-  "overall":   { "score": 1-5, "feedback": "string", "strengths": ["string"], "revisedAnswer": "string" }
+  "situation": { "score": 1-5, "feedback": "string (≤80 words)", "strengths": ["string (≤15 words)", "string (≤15 words)"] },
+  "task":      { "score": 1-5, "feedback": "string (≤80 words)", "strengths": ["string", "string"] },
+  "action":    { "score": 1-5, "feedback": "string (≤80 words)", "strengths": ["string", "string"] },
+  "result":    { "score": 1-5, "feedback": "string (≤80 words)", "strengths": ["string", "string"] },
+  "overall":   { "score": 1-5, "feedback": "string (≤60 words, encouraging summary)", "strengths": ["string", "string", "string"], "revisedAnswer": "string (5-7 sentences, rewritten STAR answer in first person, warm and natural-sounding)" }
 }`,
-      `QUESTION: "${question}"\nCANDIDATE ANSWER: "${answer}"`
+      `INTERVIEW QUESTION: "${question}"\n\nCANDIDATE'S ANSWER: "${answer}"`
     );
     res.json(result);
   } catch (err) {
-    console.error('interview-feedback error:', err);
-    res.status(500).json({ error: 'Failed to get feedback from AI.' });
+    console.error('interview-feedback error:', err?.message);
+    res.status(500).json({ error: 'Failed to get feedback. Please try again.' });
   }
 });
 
 // POST /api/improvement-suggestion
 app.post('/api/improvement-suggestion', async (req, res) => {
   const { question, answer, componentToImprove } = req.body;
-  if (!question || !answer || !componentToImprove) return res.status(400).json({ error: 'question, answer, and componentToImprove are required' });
+  if (!question || !answer || !componentToImprove)
+    return res.status(400).json({ error: 'question, answer, and componentToImprove are required' });
 
   try {
     const result = await chat(
-      `You are an interview coach. Return ONLY valid JSON: { "suggestion": "string" }`,
-      `Interview question: "${question}"
-Candidate's answer: "${answer}"
-The "${componentToImprove}" part of their STAR answer was weak.
-Provide a concise 1–2 sentence improved example for ONLY the ${componentToImprove} part. Keep it human and directly related to their context.`
+      `You are a warm interview coach helping a neurodivergent job seeker improve one specific part of their STAR answer.
+
+Write a 1–2 sentence example that improves only the "${componentToImprove}" part.
+- Stay closely tied to the context of their original answer (same job/situation).
+- Sound natural and human — not corporate or stiff.
+- Be encouraging in tone.
+- Do NOT rewrite the entire answer — only the ${componentToImprove} part.
+
+Return ONLY valid JSON: { "suggestion": "string" }`,
+      `Interview question: "${question}"\nCandidate's answer: "${answer}"\nImprove only the ${componentToImprove} section.`
     );
     res.json(result);
   } catch (err) {
-    console.error('improvement-suggestion error:', err);
-    res.json({ suggestion: 'Could not generate a suggestion at this time. Please try again.' });
+    console.error('improvement-suggestion error:', err?.message);
+    res.json({ suggestion: 'Could not generate a suggestion right now. Please try again.' });
   }
 });
 
@@ -87,47 +106,75 @@ app.post('/api/clean-question', async (req, res) => {
 
   try {
     const result = await chat(
-      `You analyze interview questions for inclusivity and clarity. Return ONLY valid JSON:
-{ "cleanedQuestion": "string", "score": 1-100, "reasoning": "string" }`,
-      `Analyze this interview question for inclusivity, clarity, and anxiety triggers: "${question}"
-Rewrite it to be more direct and unambiguous. Give it an inclusivity score (1–100) and a brief reasoning.`
+      `You are an expert in inclusive hiring and neurodiversity. Analyze interview questions for clarity, inclusivity, and anxiety reduction.
+
+SCORING RUBRIC for inclusivity (0–100):
+- 0–40: Poor — vague, anxiety-inducing, or excludes neurodivergent candidates (e.g. "Where do you see yourself in 5 years?", "What's your biggest weakness?")
+- 41–70: Average — somewhat clear but could be more direct or less ambiguous
+- 71–90: Good — clear and reasonably inclusive, minor improvements possible
+- 91–100: Excellent — specific, direct, behaviorally-focused, accessible to all candidates
+
+REWRITE RULES:
+- Replace vague phrases with specific, behavioral ones ("Tell me about a time when...")
+- Remove trick questions or questions that reward social masking
+- Prefer concrete over abstract
+- Keep the intent of the original question
+- Keep the rewritten question under 30 words
+
+Return ONLY valid JSON: { "cleanedQuestion": "string", "score": integer 0-100, "reasoning": "string (2-3 sentences explaining the score and key changes)" }`,
+      `Analyze and rewrite this interview question: "${question}"`
     );
     res.json(result);
   } catch (err) {
-    console.error('clean-question error:', err);
-    res.status(500).json({ error: 'Failed to clean question with AI.' });
+    console.error('clean-question error:', err?.message);
+    res.status(500).json({ error: 'Failed to analyze the question. Please try again.' });
   }
 });
 
 // POST /api/story-feedback
 app.post('/api/story-feedback', async (req, res) => {
   const { userSelections, story, language } = req.body;
-  if (!userSelections || !story || !language) return res.status(400).json({ error: 'userSelections, story, and language are required' });
+  if (!userSelections || !story || !language)
+    return res.status(400).json({ error: 'userSelections, story, and language are required' });
 
   try {
     const sceneSummary = story.scenes
       .map((s, idx) => {
-        const choices = userSelections[idx]?.join(', ') || 'No choice';
-        return `Scene: ${s.title[language]}\nUser choices: ${choices}`;
+        const title = s.title?.[language] || s.title?.en || `Scene ${idx + 1}`;
+        const choices = userSelections[idx]?.join(', ') || 'No choice made';
+        return `Scene ${idx + 1}: ${title}\nChoices: ${choices}`;
       })
       .join('\n\n');
 
+    const storyTitle = story.title?.[language] || story.title?.en || 'the story';
+
     const result = await chat(
-      `You are a supportive mentor. Write in ${language}. Be kind, specific, and encouraging.
-Recognize strengths. Give 1–2 gentle growth tips. Keep it under 200 words.
-Do NOT mention "AI" or "system". Use plain text bullet points ("-" or "•"), no HTML.
+      `You are a warm, encouraging mentor helping a neurodivergent person reflect on what they learned from an interactive story.
+
+Write personalised feedback in ${language === 'vi' ? 'Vietnamese' : 'English'}.
+
+RULES:
+- Open with one specific strength you noticed from their choices (be concrete, not generic)
+- Acknowledge the journey and effort, not just outcomes
+- Give 1–2 gentle, practical growth tips framed as possibilities ("You might try...", "One thing that could help...")
+- Keep the total under 180 words
+- Use plain bullet points with "-" — no HTML, no markdown headers, no bold/italic formatting
+- Do NOT mention AI, this system, or that this is automated feedback
+- Sound human, warm, and specific to their actual choices
+
 Return ONLY valid JSON: { "feedback": "string" }`,
-      `The user completed the interactive story: "${story.title[language]}"\n\n${sceneSummary}`
+      `Story: "${storyTitle}"\n\nUser's journey:\n${sceneSummary}`
     );
 
     result.feedback = result.feedback
       .replace(/<\/?[^>]+(>|$)/g, '')
+      .replace(/\*\*|__|\*|_/g, '')
       .replace(/\n\s*\n/g, '\n')
       .trim();
 
     res.json(result);
   } catch (err) {
-    console.error('story-feedback error:', err);
+    console.error('story-feedback error:', err?.message);
     res.json({ feedback: '' });
   }
 });

@@ -275,6 +275,8 @@ const InterviewPractice: React.FC = () => {
     setSuggestions({});
     setAnswer("");
     setError("");
+    setIsLoading(false);
+    setIsFetchingSuggestions(false);
     setQuestions([]);
     setCurrentQuestionIndex(0);
   };
@@ -502,11 +504,32 @@ const InterviewPractice: React.FC = () => {
         </div>
       </section>
 
+      {/* Loading overlay */}
+      {isLoading && (
+        <div className="flex items-center gap-3 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
+          <svg className="animate-spin h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" aria-hidden>
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+          </svg>
+          <span className="font-medium">
+            {language === "en" ? "Analyzing your answer…" : "Đang phân tích câu trả lời của bạn…"}
+          </span>
+        </div>
+      )}
+
       {/* Error / calm message */}
-      {error && (
-        <p className="mt-1 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-          {error}
-        </p>
+      {error && !isLoading && (
+        <div className="flex items-start gap-2 mt-1 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+          <span className="flex-1">{error}</span>
+          {error === t("unknownError") && (
+            <button
+              onClick={handleSubmitAnswer}
+              className="ml-2 flex-shrink-0 underline font-semibold hover:text-red-900"
+            >
+              {language === "en" ? "Try again" : "Thử lại"}
+            </button>
+          )}
+        </div>
       )}
 
       {/* Summary / feedback */}

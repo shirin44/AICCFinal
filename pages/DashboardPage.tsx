@@ -22,6 +22,7 @@ const DashboardPage: React.FC = () => {
   const { narratorRole, mode, language, setNarratorDialogue, setNarratorState } = useContext(AppContext);
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'practice' | 'history'>('practice');
+  const [ttsNotice, setTtsNotice] = useState('');
 
   useEffect(() => {
     if (!narratorRole) {
@@ -52,7 +53,11 @@ const DashboardPage: React.FC = () => {
       window.speechSynthesis.cancel();
       window.speechSynthesis.speak(u);
     } else {
-      alert("Sorry, your browser doesn't support text-to-speech.");
+      const msg = language === 'en'
+        ? "Text-to-speech isn't supported in your browser."
+        : "Trình duyệt của bạn không hỗ trợ đọc văn bản.";
+      setTtsNotice(msg);
+      setTimeout(() => setTtsNotice(''), 4000);
     }
   };
 
@@ -160,6 +165,7 @@ const DashboardPage: React.FC = () => {
       <div className="space-y-8">
         {/* Header — dark, high-contrast, bold */}
         {mode === 'practice' && (
+          <>
           <header className="bg-slate-900 text-white p-6 rounded-2xl shadow-lg flex items-center gap-5">
             <div className="relative w-20 h-20 md:w-24 md:h-24 flex-shrink-0">
               <span aria-hidden className="absolute -inset-1 rounded-full ring-2 ring-white/30" />
@@ -193,6 +199,15 @@ const DashboardPage: React.FC = () => {
               </div>
             </div>
           </header>
+          {ttsNotice && (
+            <div role="status" className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+              <svg className="h-4 w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
+                <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+              </svg>
+              {ttsNotice}
+            </div>
+          )}
+          </>
         )}
 
         {/* Content */}
