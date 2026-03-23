@@ -7,11 +7,13 @@ import { NARRATORS, LOCALIZED_CONTENT, STORY_CONTENT } from '@/constants';
 
 import InterviewPractice from '../components/features/jobseeker/InterviewPractice';
 import SessionHistory from '../components/features/jobseeker/SessionHistory';
+import JobTracker from '../components/features/jobseeker/JobTracker';
 import SpeakerIcon from '../components/icons/SpeakerIcon';
 import ParentGuidance from '../components/features/parent/ParentGuidance';
 import StoryPlayer from '../components/features/common/StoryPlayer';
 import PracticeIcon from '../components/icons/PracticeIcon';
 import HistoryIcon from '../components/icons/HistoryIcon';
+import { Briefcase } from 'lucide-react';
 import Tooltip from '../components/Tooltip';
 import VolunteerPractice from '../components/features/volunteer/VolunteerPractice';
 
@@ -21,7 +23,7 @@ const EmployerGuide = lazy(() => import('../components/features/employer/Employe
 const DashboardPage: React.FC = () => {
   const { narratorRole, mode, language, setNarratorDialogue, setNarratorState } = useContext(AppContext);
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'practice' | 'history'>('practice');
+  const [activeTab, setActiveTab] = useState<'practice' | 'history' | 'jobs'>('practice');
   const [ttsNotice, setTtsNotice] = useState('');
 
   useEffect(() => {
@@ -102,6 +104,23 @@ const DashboardPage: React.FC = () => {
                   <HistoryIcon className="w-5 h-5" />
                   {LOCALIZED_CONTENT.history[language]}
                 </button>
+
+                <button
+                  role="tab"
+                  id="jobs-tab"
+                  aria-controls="jobs-panel"
+                  aria-selected={activeTab === 'jobs'}
+                  onClick={() => setActiveTab('jobs')}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-md font-semibold
+                              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600
+                              transition-colors
+                              ${activeTab === 'jobs'
+                                ? 'bg-slate-900 text-white'
+                                : 'bg-white text-slate-900 border border-slate-300 hover:bg-slate-50'}`}
+                >
+                  <Briefcase className="w-5 h-5" />
+                  {language === 'en' ? 'Track Jobs' : 'Theo dõi việc làm'}
+                </button>
               </nav>
             </div>
 
@@ -127,6 +146,18 @@ const DashboardPage: React.FC = () => {
                 className="bg-white border border-slate-300 rounded-2xl p-6 shadow-sm"
               >
                 <SessionHistory />
+              </div>
+            )}
+
+            {activeTab === 'jobs' && (
+              <div
+                id="jobs-panel"
+                role="tabpanel"
+                tabIndex={0}
+                aria-labelledby="jobs-tab"
+                className="bg-white border border-slate-300 rounded-2xl p-6 shadow-sm"
+              >
+                <JobTracker />
               </div>
             )}
           </div>
